@@ -1,0 +1,14 @@
+DONE 
+
+server: rocks-52.sdsc.edu
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 32000 34000
+UNSUBMITTED: 1218050529372
+PENDING: 1218050535014
+ACTIVE: 1218050544057
+getoutputtime: 1218050842778
+DONE: 1218050836042 
+
+ERROR
+GRAM Job failed because it is unknown if the job was submitted (error code 126)

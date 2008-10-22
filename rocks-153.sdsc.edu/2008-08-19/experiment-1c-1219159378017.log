@@ -1,0 +1,12 @@
+DONE 
+
+server: rocks-153.sdsc.edu
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 31000 36000
+UNSUBMITTED: 1219159230705
+PENDING: 1219159235021
+ACTIVE: 1219159243070
+getoutputtime: 1219159738512
+DONE: 1219159378017 
+Time exhausted - No Output

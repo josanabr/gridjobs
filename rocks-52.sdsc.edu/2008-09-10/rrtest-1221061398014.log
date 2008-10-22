@@ -1,0 +1,14 @@
+DONE 
+
+server: rocks-52.sdsc.edu
+jobmanager: sge
+function: rrtest
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 30000 35000
+UNSUBMITTED: 1221061097616
+PENDING: 1221061102028
+ACTIVE: 1221061112020
+getoutputtime: 1221061402265
+DONE: 1221061398014 
+
+ERROR
+GRAM Job failed because the job manager detected an invalid script status (error code 25)

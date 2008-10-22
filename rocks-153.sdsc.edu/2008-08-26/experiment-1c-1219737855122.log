@@ -1,0 +1,14 @@
+DONE 
+
+server: rocks-153.sdsc.edu
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 32000 37000
+UNSUBMITTED: 1219737646470
+PENDING: 1219737650015
+ACTIVE: 1219737660199
+getoutputtime: 1219737856588
+DONE: 1219737855122 
+
+ERROR
+GRAM Job submission failed because the job manager failed to create an internal script argument file (error code 22)

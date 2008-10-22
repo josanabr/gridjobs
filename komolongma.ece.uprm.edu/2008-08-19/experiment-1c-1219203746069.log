@@ -1,0 +1,26 @@
+DONE 
+
+server: komolongma.ece.uprm.edu
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 32000 37000
+UNSUBMITTED: 1219203645401
+PENDING: 1219203648019
+ACTIVE: 1219203650064
+getoutputtime: 1219203759714
+DONE: 1219203746069 
+Job is running.
+Job is running.
+Job is running.
+Job is running.
+Job is running.
+Job is running.
+Job is running.
+Job is running.
+Job is running.
+Job 1722 has completed.
+Writing job STDOUT and STDERR to cache files.
+Time employed in compute-3-59.local: 85.63
+Returning job success.
+
+ERROR

@@ -1,0 +1,27 @@
+DONE 
+
+server: komolongma.ece.uprm.edu
+jobmanager: sge
+function: rrtest
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 30000 35000
+UNSUBMITTED: 1221073290796
+PENDING: 1221073294020
+ACTIVE: null
+getoutputtime: 1221073404448
+DONE: 1221073402012 
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job 4076 has completed.
+Writing job STDOUT and STDERR to cache files.
+Time employed in compute-2-31.local: 76.61
+Returning job success.
+
+ERROR

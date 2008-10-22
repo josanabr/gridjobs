@@ -1,0 +1,12 @@
+DONE 
+
+server: pragma001.grid.sinica.edu.tw
+jobmanager: pbs
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 30000 35000
+UNSUBMITTED: 1217232014211
+PENDING: null
+ACTIVE: 1217232021018
+getoutputtime: 1217232238838
+DONE: 1217232222026 
+file=Time employed in pragma002: 178.63

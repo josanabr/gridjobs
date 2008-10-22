@@ -1,0 +1,14 @@
+DONE 
+
+server: rocks-52.sdsc.edu
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 32000 37000
+UNSUBMITTED: 1219868449427
+PENDING: 1219868455014
+ACTIVE: 1219868463301
+getoutputtime: 1219868785223
+DONE: 1219868781023 
+
+ERROR
+GRAM Job failed because the job manager detected an invalid script status (error code 25)

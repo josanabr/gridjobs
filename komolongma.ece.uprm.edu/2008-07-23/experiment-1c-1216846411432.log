@@ -1,0 +1,7 @@
+Successful
+Date: 2008-07-23T16:53:31.432-04:00
+Server: komolongma.ece.uprm.edu
+Jobmanager: sge
+Parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 12000 15000
+Elapsed Time in compute node compute-1-10.local:: 0
+Elapsed Time Local: 34

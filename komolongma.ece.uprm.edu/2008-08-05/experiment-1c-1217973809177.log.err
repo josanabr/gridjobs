@@ -1,0 +1,10 @@
+FAILED | Exception
+Cause: null
+Localized Message: No such property: jobdetail for class: GlobusjobstatusJob
+Message: No such property: jobdetail for class: GlobusjobstatusJob
+Stack Trace: {org.codehaus.groovy.runtime.ScriptBytecodeAdapter.unwrap(ScriptBytecodeAdapter.java:50), org.codehaus.groovy.runtime.ScriptBytecodeAdapter.unwrap(ScriptBytecodeAdapter.java:60), org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodN(ScriptBytecodeAdapter.java:172), GlobusjobstatusJob.getProperty(GlobusjobstatusJob.groovy), org.codehaus.groovy.runtime.ScriptBytecodeAdapter.getGroovyObjectProperty(ScriptBytecodeAdapter.java:535), GlobusjobstatusJob.scheduleJobWithTriggerNewName(GlobusjobstatusJob.groovy:177), sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method), sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39), sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25), java.lang.reflect.Method.invoke(Method.java:585), org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:86), groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:230), groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:912), groovy.lang.ExpandoMetaClass.invokeMethod(ExpandoMetaClass.java:946), org.codehaus.groovy.runtime.ScriptBytecodeAdapter.invokeMethodOnCurrentN(ScriptBytecodeAdapter.java:78), GlobusjobstatusJob.execute(GlobusjobstatusJob.groovy:128), sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method), sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39), sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25), java.lang.reflect.Method.invoke(Method.java:585), org.springframework.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:160), org.codehaus.groovy.grails.plugins.quartz.GrailsJobFactory$GrailsTaskClassJob.execute(GrailsJobFactory.java:68), org.quartz.core.JobRunShell.run(JobRunShell.java:202), org.quartz.simpl.SimpleThreadPool$WorkerThread.run(SimpleThreadPool.java:529)}
+Command output (globus-job-clean): 
+Cleanup successful.
+
+
+ERROR

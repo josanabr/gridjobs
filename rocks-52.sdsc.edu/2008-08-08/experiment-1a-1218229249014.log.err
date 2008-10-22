@@ -1,0 +1,15 @@
+FAILED | No output for checking status
+Current status: PENDING
+Time: 17:00:49.014
+Server: rocks-52.sdsc.edu
+Function: experiment-1a
+Parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 4096 32 256 8192 44100 0 12000 256 30000 35000
+Command output (globus-job-cancel): Cancel
+
+ERROR
+
+Clean
+Could not clean up job.
+
+ERROR
+GRAM Job failed because the job manager detected an invalid script status (error code 25)

@@ -1,0 +1,29 @@
+
+Welcome to Grails 1.0.3 - http://grails.org/
+Licensed under Apache Standard License 2.0
+Grails home is set to: /usr/local/apps/grails		
+		
+Base Directory: /home/jas/src/grails/gridjobs-devel
+Running script /usr/local/apps/grails/scripts/RunApp.groovy
+Environment set to test
+Loading with installed plug-ins: ["mail", "quartz", "remoting"] ...
+     [copy] Copying 1 file to /home/jas/.grails/1.0.3/projects/gridjobs-devel
+Running Grails application..
+2008-10-20 14:41:06.059::INFO:  Logging to STDERR via org.mortbay.log.StdErrLog
+2008-10-20 14:41:06.300::INFO:  jetty-6.1.4
+2008-10-20 14:41:07.597::INFO:  No Transaction manager found - if your webapp requires one, please configure one.
+2008-10-20 14:41:08.680:/gridjobs-devel:INFO:  Set web app root system property: 'gridjobs-devel-test-0.1' = [/home/jas/src/grails/gridjobs-devel/web-app/]
+2008-10-20 14:41:08.681:/gridjobs-devel:INFO:  Initializing log4j from [file:/home/jas/.grails/1.0.3/projects/gridjobs-devel/resources/log4j.properties]
+2008-10-20 14:41:08.707:/gridjobs-devel:INFO:  Initializing Spring root WebApplicationContext
+[0] spring.GrailsWebApplicationContext Refreshing org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext@a0560e: display name [org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext@a0560e]; startup date [Mon Oct 20 14:41:17 AST 2008]; parent: org.springframework.web.context.support.XmlWebApplicationContext@8032df
+[3] spring.GrailsWebApplicationContext Bean factory for application context [org.codehaus.groovy.grails.commons.spring.GrailsWebApplicationContext@a0560e]: org.springframework.beans.factory.support.DefaultListableBeanFactory@d73c3c
+[Bootstrap] Elapsed time during insertion of records into Gridresource table: 1419 ms.
+[Bootstrap] Elapsed time during records deletion from Rango table: 101 ms.
+[Bootstrap] Elapsed time during insertion of records into Rango table: 147 ms.
+2008-10-20 14:41:31.485:/gridjobs-devel:INFO:  Initializing Spring FrameworkServlet 'grails'
+2008-10-20 14:41:31.700:/gridjobs-devel:INFO:  Initializing Spring FrameworkServlet 'burlap'
+2008-10-20 14:41:31.739:/gridjobs-devel:INFO:  Initializing Spring FrameworkServlet 'hessian'
+2008-10-20 14:41:31.778:/gridjobs-devel:INFO:  Initializing Spring FrameworkServlet 'httpinvoker'
+2008-10-20 14:41:31.815:/gridjobs-devel:INFO:  Initializing Spring FrameworkServlet 'rmi'
+2008-10-20 14:41:31.875::INFO:  Started SelectChannelConnector@0.0.0.0:9020
+Server running. Browse to http://localhost:9020/gridjobs-devel

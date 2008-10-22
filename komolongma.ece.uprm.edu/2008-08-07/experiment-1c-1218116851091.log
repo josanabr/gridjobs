@@ -1,0 +1,14 @@
+DONE 
+
+server: komolongma.ece.uprm.edu
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 30000 32000
+UNSUBMITTED: 1218116403997
+PENDING: 1218116407016
+ACTIVE: 1218116419020
+getoutputtime: 1218116855043
+DONE: 1218116851091 
+Time employed in compute-1-22.local: 302.01
+
+ERROR

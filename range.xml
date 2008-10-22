@@ -1,0 +1,7 @@
+<range>
+<item stvalue='x &lt; estimatedtime' value='0'/>
+<item stvalue='estimatedtime &lt;= x &amp;&amp; x &lt; 2*estimatedtime' value='1'/>
+<item stvalue='2*estimatedtime &lt;= x &amp;&amp; x &lt; 3*estimatedtime' value='2'/>
+<item stvalue='3*estimatedtime &lt;= x &amp;&amp; x &lt; 4*estimatedtime' value='3'/>
+<!-- and so on -->
+</range>

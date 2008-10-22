@@ -1,0 +1,27 @@
+DONE 
+
+server: komolongma.ece.uprm.edu
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 30000 35000
+UNSUBMITTED: 1219432803758
+PENDING: 1219432807021
+ACTIVE: null
+getoutputtime: 1219432931478
+DONE: 1219432917074 
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job is still queued for execution.
+Job 2348 has completed.
+Writing job STDOUT and STDERR to cache files.
+Time employed in compute-1-16.local: 74.18
+Returning job success.
+
+ERROR

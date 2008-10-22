@@ -1,0 +1,14 @@
+DONE 
+
+server: sakura.hpcc.jp
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 31000 36000
+UNSUBMITTED: 1219609231908
+PENDING: 1219609238013
+ACTIVE: 1219609247147
+getoutputtime: 1219609511888
+DONE: 1219609507017 
+
+ERROR
+GRAM Job submission failed because the connection to the server failed (check host and port) (error code 12)

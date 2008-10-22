@@ -1,0 +1,16 @@
+DONE 
+
+server: rocks-153.sdsc.edu
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 30000 35000
+UNSUBMITTED: 1218693606808
+PENDING: 1218693610022
+ACTIVE: 1218693629021
+getoutputtime: 1218693827165
+DONE: 1218693808191 
+/opt/gridengine/default/spool/compute-0-3/active_jobs/6096.1/pe_hostfile
+compute-0-3
+Time employed in compute-0-3.local: 162.11
+
+ERROR

@@ -1,0 +1,13 @@
+FAILED | No output for checking status
+Current status: ACTIVE
+Time: 21:23:56.013
+Server: rocks-153.sdsc.edu
+Function: experiment-1c
+Parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 31000 36000
+Command output (globus-job-cancel): Cancel
+
+ERROR
+
+Clean
+
+ERROR

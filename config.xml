@@ -1,0 +1,21 @@
+<configuration>
+<gridresources>
+   <headnode name="komolongma.ece.uprm.edu"/>
+   <headnode name="rocks-52.sdsc.edu"/>
+   <headnode name="rocks-153.sdsc.edu"/>
+   <headnode name="sakura.hpcc.jp"/>
+   <headnode name="fsvc001.asc.hpcc.jp"/>
+</gridresources>
+<states>
+   <value>UNSUBMITTED</value>
+   <value>PENDING</value>
+   <value>ACTIVE</value>
+</states>
+<contactinfo>
+   <contact firstname="Rafael" lastname="Arce" email="rafael.arce@upr.edu"/>
+   <contact firstname="John" lastname="Sanabria" email="john.sanabria@ece.uprm.edu"/>
+</contactinfo>
+<scripthome value="/home/jas/src/grails/gridjobs/scripts/R"/>
+<imgdir value="images"/>
+<rscriptpath value="/usr/bin/Rscript"/>
+</configuration>

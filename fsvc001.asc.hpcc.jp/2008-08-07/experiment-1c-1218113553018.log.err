@@ -1,0 +1,14 @@
+FAILED | status PENDING exceeded its deadline
+Current status: PENDING
+Time: 08:52:33.018
+Server: fsvc001.asc.hpcc.jp
+Function: experiment-1c
+Parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 32000 34000
+Command output (globus-job-cancel): Cancel
+
+ERROR
+
+Clean
+
+ERROR
+Error canceling job

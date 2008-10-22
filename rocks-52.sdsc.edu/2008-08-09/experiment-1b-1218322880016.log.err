@@ -1,0 +1,27 @@
+FAILED | No output for checking status
+Current status: UNSUBMITTED
+Time: 19:01:20.016
+Server: rocks-52.sdsc.edu
+Function: experiment-1b
+Parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 8192 32 512 8192 44100 0 12000 256 30000 35000
+Command output (globus-job-cancel): Cancel
+
+ERROR
+
+ERROR: jobID string is missing
+
+Syntax : globus-job-cancel [-help] [-version] [-force] jobid
+
+Use -help to display full usage.
+
+
+Clean
+
+ERROR
+
+ERROR: jobID string is missing
+
+Syntax : globus-job-clean [-help] [-version] [-force] jobid
+
+Use -help to display full usage.
+

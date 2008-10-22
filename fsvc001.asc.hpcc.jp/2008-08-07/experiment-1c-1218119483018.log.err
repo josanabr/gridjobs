@@ -1,0 +1,14 @@
+FAILED | status PENDING exceeded its deadline
+Current status: PENDING
+Time: 10:31:23.018
+Server: fsvc001.asc.hpcc.jp
+Function: experiment-1c
+Parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 31000 33000
+Command output (globus-job-cancel): Cancel
+
+ERROR
+
+Clean
+
+ERROR
+GRAM Job status failed because data transfer to the server failed (error code 10)

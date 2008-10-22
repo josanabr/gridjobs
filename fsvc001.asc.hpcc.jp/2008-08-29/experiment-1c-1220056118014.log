@@ -1,0 +1,14 @@
+DONE 
+
+server: fsvc001.asc.hpcc.jp
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 32000 37000
+UNSUBMITTED: 1220055652384
+PENDING: 1220055658017
+ACTIVE: 1220055667012
+getoutputtime: 1220056145421
+DONE: 1220056118014 
+Time employed in fcmp045: 333.4
+
+ERROR

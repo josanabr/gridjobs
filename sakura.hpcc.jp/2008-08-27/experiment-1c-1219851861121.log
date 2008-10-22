@@ -1,0 +1,14 @@
+DONE 
+
+server: sakura.hpcc.jp
+jobmanager: sge
+function: experiment-1c
+parameters: /home/jas/src/stft2.0.1/main /home/jas/src/stft2.0.1/1-2006-05-12_2100.txt 16384 32 1024 16384 44100 0 12000 256 30000 35000
+UNSUBMITTED: 1219851611686
+PENDING: 1219851617047
+ACTIVE: 1219851635124
+getoutputtime: 1219851876843
+DONE: 1219851861121 
+Time employed in sakura08.hpcc.jp: 188.65
+
+ERROR
