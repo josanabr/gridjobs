@@ -11,6 +11,7 @@ class EchoService implements remote.Echo {
          body "${_echo}"
       }
       */
+      println "[EchoService - echo ${util.joda.Util.datetime()}] ${_echo}"
       return _echo
    }
 }

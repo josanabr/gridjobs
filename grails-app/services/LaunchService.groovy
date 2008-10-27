@@ -23,28 +23,34 @@ implements remote.Globusjob {
     def function = config.Config.function
 
    String execute(String server, String jobmanager, String parameters, String when, boolean lock, boolean sync) {
+      println "[LaunchService - execute ${util.joda.Util.datetime()}] ${server} ${jobmanager} ${parameters} SYNC? ${sync}"
       def cronexpression = util.quartz.Util.createcronexpression(when)
-      def cdt = new DateTime().getMillis()
 
-      Trigger trigger = new CronTrigger("${jobnameprefix}_${server}-${cdt}","${jobgroupprefix}_${server}-${cdt}",cronexpression)
+      //Trigger trigger = new CronTrigger("${jobnameprefix}_${server}-${cdt}","${jobgroupprefix}_${server}-${cdt}",cronexpression)
+      Trigger trigger = new CronTrigger()
       trigger.setJobName(jobname)
       trigger.setJobGroup(jobgroup)
       trigger.jobDataMap.server = server
       trigger.jobDataMap.jobmanager = jobmanager
       trigger.jobDataMap.function = util.Util.getvalue(function,parameters)
-      //println util.Util.getvalue(function,parameters)
-      //println trigger.jobDataMap.function
       trigger.jobDataMap.parameters = util.Util.getvalue(remotecommand,parameters)
-      //println trigger.jobDataMap.parameters
       trigger.jobDataMap.crnexpr = when
       trigger.jobDataMap.cronexpression = cronexpression
       trigger.jobDataMap.lock = lock
       trigger.jobDataMap.sync = sync
 
+      def cdt = new DateTime().getMillis()
+      trigger.setName("${jobnameprefix}_${server}-${cdt}")
+      trigger.setGroup("${jobgroupprefix}_${server}-${cdt}")
+      trigger.setCronExpression(cronexpression)
+
+      println "[LaunchService - execute] Scheduling trigger ${trigger.name}/${trigger.group}"
       quartzScheduler.scheduleJob(trigger)
+      println "[LaunchService - execute ${util.joda.Util.datetime()}] trigger ${trigger.name}/${trigger.group}"
    }
 
    String execute(String server, String appname, String parameters, String executionname) {
+      println "[LaunchService - execute ${util.joda.Util.datetime()}] ${server} ${appname} ${parameters} ${executionname}"
       // Before to invoke the quartz job it's necessary collect some data from the DB
       def gr = Gridresource.findByName(server)
       def batchscheduler = gr.batchscheduler
@@ -64,15 +70,17 @@ implements remote.Globusjob {
       def lock = false
       def sync = false
       def newparameters = "remotecommand:${userhome}/${installationpath}/${appname} ${parameters},function:${executionname}"
-      println "params ${newparameters} ${server} ${batchscheduler} ${executionname}"
+      println "[LaunchService - execute] params ${newparameters} ${server} ${batchscheduler} ${executionname}"
       execute(server, batchscheduler, newparameters, when, lock, sync)
+      println "[LaunchService - execute ${util.joda.Util.datetime()}] ${server} ${appname} ${parameters} ${executionname} DONE!"
    }
 
    String execute(String server, String jobmanager, String parameters, String when, boolean lock, boolean sync, Map estimates) {
+      println "[LaunchService - execute ${util.joda.Util.datetime()}] ${server} ${jobmanager} ${parameters} SYNC? ${sync} with Map"
       def cronexpression = util.quartz.Util.createcronexpression(when)
-      def cdt = new DateTime().getMillis()
 
-      Trigger trigger = new CronTrigger("${jobnameprefix}_${server}-${cdt}","${jobgroupprefix}_${server}-${cdt}",cronexpression)
+      //Trigger trigger = new CronTrigger("${jobnameprefix}_${server}-${cdt}","${jobgroupprefix}_${server}-${cdt}",cronexpression)
+      Trigger trigger = new CronTrigger()
       trigger.setJobName(jobname)
       trigger.setJobGroup(jobgroup)
       trigger.jobDataMap.server = server
@@ -85,8 +93,13 @@ implements remote.Globusjob {
       trigger.jobDataMap.sync = sync
       trigger.jobDataMap.estimates = estimates
 
+      def cdt = new DateTime().getMillis()
+      trigger.setName("${jobnameprefix}_${server}-${cdt}")
+      trigger.setGroup("${jobgroupprefix}_${server}-${cdt}")
+      trigger.setCronExpression(cronexpression)
+
+      println "[LaunchService - execute] Scheduling trigger ${trigger.name}/${trigger.group} with Map"
       quartzScheduler.scheduleJob(trigger)
+      println "[LaunchService - execute ${util.joda.Util.datetime()}] trigger ${trigger.name}/${trigger.group} with Map DONE"
    }
-
-
 }

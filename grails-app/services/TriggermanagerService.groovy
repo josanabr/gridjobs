@@ -9,9 +9,8 @@ class TriggermanagerService implements remote.TriggerManager {
     static expose = ['hessian']
     def quartzScheduler
 
-    def serviceMethod() {
-    }
     String triggerls() {
+       println "[TriggermanagerService - triggerls ${util.joda.Util.datetime()}]"
        def triggergroupnames = quartzScheduler.triggerGroupNames
        def result = ""
        triggergroupnames.each { _triggergn ->
@@ -21,13 +20,14 @@ class TriggermanagerService implements remote.TriggerManager {
              result += "\n\tName: ${_triggern}"
           }
        }
-
+       println "[TriggermanagerService - triggerls ${util.joda.Util.datetime()}]"
        return result + "\n"
     }
     boolean triggerrm(String name, String group) {
        quartzScheduler.unscheduleJob(name,group)
     }
     String triggerstate(String name,String group) {
+       println "[TriggermanagerService - triggerstate ${util.joda.Util.datetime()}] ${name}/${group}"
        switch (quartzScheduler.getTriggerState(name,group)) {
           case Trigger.STATE_NORMAL: return "NORMAL"
           case Trigger.STATE_PAUSED: return "PAUSED"
@@ -36,25 +36,25 @@ class TriggermanagerService implements remote.TriggerManager {
           case Trigger.STATE_BLOCKED: return "BLOCKED"
           case Trigger.STATE_NONE: return "NONE"
        }
+       println "[TriggermanagerService - triggerstate ${util.joda.Util.datetime()}] ${name}/${group} DONE"
        return "UNKNOWN STATE"
     }
 
     String jobls(String options) {
+       println "[TriggermanagerService - jobls ${util.joda.Util.datetime()}] Options: ${options}"
        def arrayoptions = []
        if (options != "") 
           arrayoptions = options.split(",")
        def result = ""
        // jeclst stands for Job Execution Context List
        def jeclst = quartzScheduler.getCurrentlyExecutingJobs()
+       println "[TriggermanagerService - jobls]\t Number of contexts ${jeclst.size()}"
        jeclst.each { jec ->
          def _jd = jec.getJobDetail()
          def _t = jec.getTrigger()
          result += "\nJob ${_jd.name}/${_jd.group}"
-         // _jdm refers to job data map
-         //def _jdm = _jd.jobDataMap 
          def _jdm = jec.jobDataMap 
          def keys = _jdm.getKeys()
-         //result += "\n\tJobDataMap ${_jd.jobDataMap}"
          result += "\nJobDataMap"
          keys.each { _key ->
             if (arrayoptions.size() != 0) {
@@ -75,12 +75,14 @@ class TriggermanagerService implements remote.TriggerManager {
          result += "\n"
        }
 
+       println "[TriggermanagerService - jobls ${util.joda.Util.datetime()}] Options: ${options} DONE"
        return result + "\n"
     }
 
    // I assume that the parameters have the following layout
    // hola:mundo, demo:tierra
     String jobrm(String name,String group, String parameters) {
+       println "[TriggermanagerService - jobrm ${util.joda.Util.datetime()}] ${name}/${group} ${parameters}"
        def params = []
        if (parameters != "") 
           params = parameters.split(",") 
@@ -124,5 +126,6 @@ class TriggermanagerService implements remote.TriggerManager {
          if (flag) 
             jec.job.interrupt()
        }
+       println "[TriggermanagerService - jobrm ${util.joda.Util.datetime()}] ${name}/${group} ${parameters} DONE"
     }
 }

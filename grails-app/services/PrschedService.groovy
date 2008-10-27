@@ -10,6 +10,7 @@ implements remote.Scheduler
     def launchService 
 
     Object executeTask(String parameters, String when, boolean lock, boolean sync) {
+       println "[PrschedService - executeTask ${util.joda.Util.datetime()}] ${parameters} ${when} SYNC? ${sync}"
        def totaltimest = "totaltime"
        def configfile = "config.xml"
        def scriptsuffix = "-gen.R"
@@ -28,6 +29,7 @@ implements remote.Scheduler
        def estimateperhn = [:] // this variable will contain a hashmap whose key is a headnode
                           // and its value is a hashmap containing estimates for unsubmitted
                           // pending and active stages.
+       println "[PrschedService - executeTask] estimating values from the available resources"
        gsl.each { gs ->
          def hn = gs.headnode // estimating time for every headnode
          if (hn == "komolongma.ece.uprm.edu") {
@@ -41,7 +43,7 @@ implements remote.Scheduler
             try {
                output = util.Util.executegetoutput(_rscriptname).split(" ")[1]
             } catch (Exception e) {
-               println "[PrschedService] Problems accessing output of script ${_rscriptname}"
+               println "[PrschedService - executeTask] Problems accessing output of script ${_rscriptname}"
                return
             }
             estimateperst[state] = (long)(Double.parseDouble(output))
@@ -68,9 +70,10 @@ implements remote.Scheduler
          }
        }
 
-       println "[PrschedService] Selected: ${hnselected} estimated time: ${minvalue}"
+       println "[PrschedService - executeTask] Selected: ${hnselected} estimated time: ${minvalue}"
        def endmilli = new DateTime()
        def period  = new Period(endmilli.millis - startmilli.millis)
-       println "[PrschedService] Scheduler elapsed time: ${period.hours} h ${period.minutes} m ${period.seconds} s ${period.millis} ms"
+       println "[PrschedService - executeTask] Scheduler elapsed time: ${period.hours} h ${period.minutes} m ${period.seconds} s ${period.millis} ms"
+       println "[PrschedService - executeTask ${util.joda.Util.datetime()}]"
     }
 }
