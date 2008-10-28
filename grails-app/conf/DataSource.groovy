@@ -23,7 +23,7 @@ environments {
 	test {
 		dataSource {
 			dbCreate = "update"
-			url = "jdbc:postgresql:gridjobstest"
+			url = "jdbc:postgresql:grailstest"
 		}
 	}
 	production {
