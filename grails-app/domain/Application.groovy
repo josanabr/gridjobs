@@ -14,7 +14,7 @@ class Application {
       name(nullable: false)
       gridresource(nullable: false)
       executablename(nullable:false)
-      Date installationdate(nullable:false)
+      installationdate(nullable:false)
    }
 
 }
