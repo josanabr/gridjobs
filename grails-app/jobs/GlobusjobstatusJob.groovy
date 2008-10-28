@@ -5,6 +5,8 @@ import org.quartz.JobDataMap
 import org.quartz.JobDetail
 import org.quartz.JobExecutionContext
 
+
+
 class GlobusjobstatusJob
 {
    static triggers = { }
@@ -15,18 +17,22 @@ class GlobusjobstatusJob
    def mailService
 
    def execute(context) {
+      def _flag 
       def mjdm = context.getMergedJobDataMap()
       def oldtrigger = context.getTrigger()
       def previousstatus = mjdm.status
       def url = mjdm.url
       def server = mjdm.server
+      println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}/${parameters}]"
 
       def report = ""
       def output = ""
 
       def cdt = new DateTime()
+      println "[GlobusjobstatusJob - execute]\t[${server}] Executing globusjobstatus to [${url}]"
       def status = util.Util.executegetoutput("${globushome}/bin/${config.Config.globusjobstatus} ${url}")
       status = status.split("\n")[0]
+
       if (status == "" || status == null || status == config.Config.ERROR) {
          output = totalclean(context,"[ ERROR - ${new DateTime().toLocalTime()}/${server}] Abnormal status -> ${status}")
          report = "FAILED | No output for checking status\n"
@@ -37,13 +43,18 @@ class GlobusjobstatusJob
          report += "Parameters: ${mjdm.parameters}\n"
          report += "Command output (${config.Config.globusjobcancel}): ${output}\n"
          util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log.err")
+         println "[GlobusjobstatusJob - execute]\t[${server}] Status ERROR = ${status}"
+         _flag = util.quartz.Util.removetrigger(context)
+         println "[GlobusjobstatusJob - execute]\t[${server}] Trigger removed? ${_flag}"
+         println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}] Exiting by error on 'status'"
          return 
       }
       if (previousstatus == status) {
          if (mjdm.estimates != null) {
-            println "[GlobusjobstatusJob - ${server}/${cdt.toLocalTime()}] status -> ${status}"
-            if (mjdm.estimates["${status.toUpperCase()}"] + mjdm."${status}" < new DateTime().getMillis()) 
-               println "[GlobusjobstatusJob - ${server}/${cdt.toLocalTime()}] Prsched-ESTIMATED failed" 
+            //println "[GlobusjobstatusJob - ${server}/${cdt.toLocalTime()}] status -> ${status}"
+            if (mjdm.estimates["${status.toUpperCase()}"] + mjdm."${status}" < new DateTime().getMillis()) {
+               println "[GlobusjobstatusJob - execute]\t[${server}] Prsched-ESTIMATED failed"
+            }
          }
          def maxwaitingtime = util.Util.st2millis(util.Util.getproperty(config.Config."${status}${config.Config.MAXTIME}"))
          if ( (maxwaitingtime + mjdm."${status}") < new DateTime().getMillis() ) { // The waiting time was exceeded
@@ -56,13 +67,16 @@ class GlobusjobstatusJob
             report += "Parameters: ${mjdm.parameters}\n"
             report += "Command output (${config.Config.globusjobcancel}): ${output}\n"
             util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log.err")
+            println "[GlobusjobstatusJob - execute]\t[${server}] Exceeded time"
+            _flag = util.quartz.Util.removetrigger(context)
+            println "[GlobusjobstatusJob - execute]\t[${server}] Trigger removed? ${_flag}"
             // Report the estimated failed!
+            println "[GlobusjobstatusJob - execute] [${server}] Exiting due to exhausted time"
             return 
          }
-         // Delete the old trigger
-         util.quartz.Util.removetrigger(context)
          // A new trigger is created!
-         def trigger = new CronTrigger("${config.Config.jobnameprefix}_${server}-${cdt.getMillis()}","${config.Config.jobgroupprefix}_${server}-${cdt.getMillis()}")
+         //def trigger = new CronTrigger("${config.Config.jobnameprefix}_${server}-${cdt.getMillis()}","${config.Config.jobgroupprefix}_${server}-${cdt.getMillis()}")
+         def trigger = new CronTrigger()
          // Populate the trigger
          trigger.setJobName(config.Config.jobstatusname)
          trigger.setJobGroup(config.Config.jobgroup)
@@ -82,22 +96,34 @@ class GlobusjobstatusJob
          }
          trigger.jobDataMap.url = mjdm.url
          if (mjdm.estimates != null) {
-            println "[GlobusjobstatusJob - ${server}/${cdt.toLocalTime()}] transfering estimates"
+            println "[GlobusjobstatusJob - execute] [${server}] transfering estimates"
             trigger.jobDataMap.estimates = mjdm.estimates
          }
-
-         scheduleJobWithTriggerNewName(context,trigger)
+         if (!scheduleJobWithTriggerNewName(context,trigger)) { // Scheduling failed
+            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
+            // Delete the old trigger
+            _flag = util.quartz.Util.removetrigger(context)
+            println "[GlobusjobstatusJob - execute]\t[${server}] Trigger remove? ${_flag}"
+            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
+            return
+         }
+         util.quartz.Util.removetrigger(context)
          return // The status did not change
       } 
       // Status changed!
-      println "[${new DateTime().toLocalTime()}/${server}] [${oldtrigger.name}-${context.jobDetail.fullName}] Status change ${previousstatus} -> ${status}"
+      //println "[${new DateTime().toLocalTime()}/${server}] [${oldtrigger.name}-${context.jobDetail.fullName}] Status change ${previousstatus} -> ${status}"
+      println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Status changed ${previousstatus} -> ${status}"
       mjdm."${status}" = cdt.getMillis()
       mjdm.status = status
       if (status == config.Config.DONE || status == config.Config.FAILED) {
-         println "[${new DateTime().toLocalTime()}/${server}] Job finalized at ${mjdm.server}! ${status}"
-         util.quartz.Util.removetrigger(context)
-         if (mjdm.lock) 
+         //println "[${new DateTime().toLocalTime()}/${server}] Job finalized at ${mjdm.server}! ${status}"
+         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Task finalized"
+         _flag = util.quartz.Util.removetrigger(context)
+         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Trigger removed? ${_flag} "
+         if (mjdm.lock) {
+            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Removing lock file"
             util.Util.deletelock(mjdm.server)
+         }
          def keys = ["server","jobmanager","function","parameters"]
          if (status == config.Config.DONE) {
             def start = new DateTime()
@@ -117,6 +143,7 @@ class GlobusjobstatusJob
          report = "${status} \n${util.Util.createreport(mjdm as HashMap,keys)} \n${output}"
          util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log")
 
+         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Sending notification via e-mail"
          def contacts = Contactinfo.list() 
          contacts.each { contact ->
             mailService.sendMail {
@@ -127,10 +154,12 @@ class GlobusjobstatusJob
             }
          }
          // Report about how good the estimation was
+         println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}][${server}/${mjdm.parameters}] Task DONE"
          return 
       } else { // The job still runs
-         util.quartz.Util.removetrigger(context)
-         def trigger = new CronTrigger("${config.Config.jobnameprefix}_${server}-${cdt.getMillis()}","${config.Config.jobgroupprefix}_${server}-${cdt.getMillis()}")
+         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Creating a new trigger"
+         //def trigger = new CronTrigger("${config.Config.jobnameprefix}_${server}-${cdt.getMillis()}","${config.Config.jobgroupprefix}_${server}-${cdt.getMillis()}")
+         def trigger = new CronTrigger()
          // Passing "all" parameters from the invoker trigger 
          trigger.setJobName(config.Config.jobstatusname)
          trigger.setJobGroup(config.Config.jobgroup)
@@ -155,7 +184,17 @@ class GlobusjobstatusJob
             trigger.jobDataMap.estimates = mjdm.estimates
          }
 
-         scheduleJobWithTriggerNewName(context,trigger)
+         if (!scheduleJobWithTriggerNewName(context,trigger)) { // Scheduling failed
+            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
+            // Delete the old trigger
+            _flag = util.quartz.Util.removetrigger(context)
+            println "[GlobusjobstatusJob - execute]\t[${server}] Trigger remove? ${_flag}"
+            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
+            return
+         }
+         _flag = util.quartz.Util.removetrigger(context)
+         println "[GlobusjobstatusJob - execute]\t[${server}] Trigger remove? ${_flag}"
+         return
       }
    }
 
@@ -194,7 +233,7 @@ class GlobusjobstatusJob
    /**
    -=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-=*=-
    */
-   void scheduleJobWithTriggerNewName(JobExecutionContext context,CronTrigger trigger) {
+   boolean scheduleJobWithTriggerNewName(JobExecutionContext context,CronTrigger trigger) {
       def cdt
       def output = ""
       def report = ""
@@ -208,21 +247,24 @@ class GlobusjobstatusJob
       def flag = true 
       def counter = 0
       def cronexpression 
+      println "[GlobusjobstatusJob - scheduleJobWithTriggerNewName]\tTrying to schedule a new trigger"
       while (flag) {
          try { 
             cdt = new DateTime() 
             trigger.setName("${config.Config.jobnameprefix}_${server}_${util.Util.uniqueint()}-${cdt.getMillis()}")
+            trigger.setGroup("${config.Config.jobgroupprefix}_${server}_${util.Util.uniqueint()}-${cdt.getMillis()}")
             cronexpression = util.quartz.Util.createcronexpression("NOW+${minimumthreshold}s")
             trigger.setCronExpression(cronexpression)
             quartzScheduler.scheduleJob(trigger)
             flag = false
          } catch (Exception e) {
+            println "[GlobusjobstatusJob - scheduleJobWithTriggerNewName]\tSchedule try, failed! (${counter}/${MAXTRIES})"
             counter++
             if (counter >= MAXTRIES) break
          }
       }
       if (counter >= MAXTRIES) {
-         println "[GlobusjobstatusJob - scheduleJobWithTriggerNewName] ${MAXTRIES} tries and it wasn't possible to create a unique trigger identifier"
+         println "[GlobusjobstatusJob - scheduleJobWithTriggerNewName]\t ${MAXTRIES} tries and it wasn't possible to create a unique trigger identifier"
          output = totalclean(context,"[${new DateTime().toLocalTime()}/${server}] Quartz Scheduler exception")
          report = "FAILED | Exception\n"
          report += "Cause: ${e.getCause()}\n"
@@ -231,6 +273,8 @@ class GlobusjobstatusJob
          report += "Stack Trace: ${e.getStackTrace()}\n"
          report += "Command output (globus-job-clean): ${output}\n"
          util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log.err")
+         return false
       }
+      return true
    }
 }
