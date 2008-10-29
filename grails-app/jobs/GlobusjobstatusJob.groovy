@@ -99,6 +99,7 @@ class GlobusjobstatusJob
             println "[GlobusjobstatusJob - execute] [${server}] transfering estimates"
             trigger.jobDataMap.estimates = mjdm.estimates
          }
+         /*
          if (!scheduleJobWithTriggerNewName(context,trigger)) { // Scheduling failed
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
             // Delete the old trigger
@@ -108,6 +109,13 @@ class GlobusjobstatusJob
             return
          }
          util.quartz.Util.removetrigger(context)
+         */
+         if (!scheduleJobWithOldTriggerName(context,trigger)) { // Scheduling failed
+            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
+            // Delete the old trigger
+            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
+            return
+         }
          return // The status did not change
       } 
       // Status changed!
@@ -184,6 +192,7 @@ class GlobusjobstatusJob
             trigger.jobDataMap.estimates = mjdm.estimates
          }
 
+/*
          if (!scheduleJobWithTriggerNewName(context,trigger)) { // Scheduling failed
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
             // Delete the old trigger
@@ -192,8 +201,15 @@ class GlobusjobstatusJob
             println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
             return
          }
-         _flag = util.quartz.Util.removetrigger(context)
-         println "[GlobusjobstatusJob - execute]\t[${server}] Trigger remove? ${_flag}"
+         */
+         if (!scheduleJobWithOldTriggerName(context,trigger)) { // Scheduling failed
+            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
+            // Delete the old trigger
+            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
+            return
+         }
+         //_flag = util.quartz.Util.removetrigger(context)
+         //println "[GlobusjobstatusJob - execute]\t[${server}] Trigger remove? ${_flag}"
          return
       }
    }
@@ -265,6 +281,45 @@ class GlobusjobstatusJob
       }
       if (counter >= MAXTRIES) {
          println "[GlobusjobstatusJob - scheduleJobWithTriggerNewName]\t ${MAXTRIES} tries and it wasn't possible to create a unique trigger identifier"
+         output = totalclean(context,"[${new DateTime().toLocalTime()}/${server}] Quartz Scheduler exception")
+         report = "FAILED | Exception\n"
+         report += "Cause: ${e.getCause()}\n"
+         report += "Localized Message: ${e.getLocalizedMessage()}\n"
+         report += "Message: ${e.getMessage()}\n"
+         report += "Stack Trace: ${e.getStackTrace()}\n"
+         report += "Command output (globus-job-clean): ${output}\n"
+         util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log.err")
+         return false
+      }
+      return true
+   }
+
+   boolean scheduleJobWithOldTriggerName(JobExecutionContext context,CronTrigger trigger) {
+      def cdt
+      def output = ""
+      def report = ""
+      def mjdm = context.getMergedJobDataMap()
+      def server = mjdm.server
+      def minimumthreshold = mjdm.minimumthreshold
+
+      trigger.setJobName(config.Config.jobstatusname)
+      trigger.setJobGroup(config.Config.jobgroup)
+      trigger.setName(contex.trigger.name)
+      trigger.setGroup(context.trigger.group)
+      def cronexpression 
+      println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrying to schedule a new trigger"
+      if (util.quartz.Util.removetrigger(context)) {
+         println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} removed!"
+      } else {
+         println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} DOESN'T removed!"
+      }
+      cronexpression = util.quartz.Util.createcronexpression("NOW+${minimumthreshold}s")
+      trigger.setCronExpression(cronexpression)
+      try { 
+         quartzScheduler.scheduleJob(trigger)
+      } catch (Exception e) {
+         cdt = new DateTime() 
+         println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tSchedule try, failed! (${counter}/${MAXTRIES})"
          output = totalclean(context,"[${new DateTime().toLocalTime()}/${server}] Quartz Scheduler exception")
          report = "FAILED | Exception\n"
          report += "Cause: ${e.getCause()}\n"
