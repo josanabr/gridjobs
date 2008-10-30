@@ -108,18 +108,18 @@ class GlobusjobinstanceJob{
          trigger.jobDataMap.cronexpression = cronexpression
          trigger.jobDataMap."${config.Config.UNSUBMITTED}" = cdt
          //
-         // Insert information to 'task'
+         // Inserting information to 'task' table
          //
-         {
-            print "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Saving data to DB... "
-            Gridresource _gr = Gridresource.findByName(server)
-            Task _task = new Task(gridresource: gr, unsubmitted: cdt, state: config.Config.UNSUBMITTED)
-            if (_task.save() != null) {
-               println "saved"
-            } else {
-               println "doesn't saved"
-            }
+         print "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Saving data to DB... "
+         Gridresource _gr = Gridresource.findByName(server)
+         Task _task = new Task(gridresource: gr, unsubmitted: cdt, state: config.Config.UNSUBMITTED)
+         if (_task.save() != null) {
+            println "saved"
+         } else {
+            println "doesn't saved"
          }
+         //
+         //
          trigger.jobDataMap.status = config.Config.UNSUBMITTED
          trigger.jobDataMap.minimumthreshold = seconds
          if (mjdm.estimates != null) {
@@ -133,7 +133,7 @@ class GlobusjobinstanceJob{
             println "[${new DateTime().toLocalTime()}] =>Trigger removed [${server}] (SYNC)"
             util.quartz.Util.removetrigger(context)
          }
-         trigger.setCronExpression( new CronExpression(util.quartz.Util.createcronexpression("NOW+${seconds}s")))
+         //trigger.setCronExpression( new CronExpression(util.quartz.Util.createcronexpression("NOW+${seconds}s")))
          cdt = new DateTime().getMillis()
          trigger.name = "${config.Config.jobnameprefix}_${cdt}" 
          trigger.group = "${config.Config.jobgroupprefix}_${cdt}"
