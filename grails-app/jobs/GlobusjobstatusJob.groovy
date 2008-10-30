@@ -23,13 +23,13 @@ class GlobusjobstatusJob
       def previousstatus = mjdm.status
       def url = mjdm.url
       def server = mjdm.server
-      println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}/${mjdm.parameters}]"
+      //println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}/${mjdm.parameters}]"
 
       def report = ""
       def output = ""
 
       def cdt = new DateTime()
-      println "[GlobusjobstatusJob - execute]\t[${server}] Executing globusjobstatus to [${url}]"
+      //println "[GlobusjobstatusJob - execute]\t[${server}] Executing globusjobstatus to [${url}]"
       def status = util.Util.executegetoutput("${globushome}/bin/${config.Config.globusjobstatus} ${url}")
       status = status.split("\n")[0]
 
@@ -263,7 +263,7 @@ class GlobusjobstatusJob
       def flag = true 
       def counter = 0
       def cronexpression 
-      println "[GlobusjobstatusJob - scheduleJobWithTriggerNewName]\tTrying to schedule a new trigger"
+      //println "[GlobusjobstatusJob - scheduleJobWithTriggerNewName]\tTrying to schedule a new trigger"
       while (flag) {
          try { 
             cdt = new DateTime() 
@@ -307,7 +307,7 @@ class GlobusjobstatusJob
       trigger.setName(context.trigger.name)
       trigger.setGroup(context.trigger.group)
       def cronexpression 
-      println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrying to schedule a new trigger"
+      //println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrying to schedule a new trigger"
       if (util.quartz.Util.removetrigger(context)) {
          //println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} removed!"
       } else {
@@ -320,7 +320,6 @@ class GlobusjobstatusJob
          //println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} created!"
       } catch (Exception e) {
          cdt = new DateTime() 
-         println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tSchedule try, failed! (${counter}/${MAXTRIES})"
          output = totalclean(context,"[${new DateTime().toLocalTime()}/${server}] Quartz Scheduler exception")
          report = "FAILED | Exception\n"
          report += "Cause: ${e.getCause()}\n"
