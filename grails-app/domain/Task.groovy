@@ -14,7 +14,7 @@ class Task {
    static constraints = {
       unsubmitted(unique: true, nullable: false)
       gridresource(nullable: false)
-      state(nullable, false)
+      state(nullable: false)
 
       pending(nullable: true)
       active(nullable: true)
