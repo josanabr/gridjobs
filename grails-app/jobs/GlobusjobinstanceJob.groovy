@@ -112,7 +112,7 @@ class GlobusjobinstanceJob{
          //
          print "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Saving data to DB... "
          Gridresource _gr = Gridresource.findByName(server)
-         Task _task = new Task(gridresource: gr, unsubmitted: cdt, state: config.Config.UNSUBMITTED)
+         Task _task = new Task(gridresource: _gr, unsubmitted: cdt, state: config.Config.UNSUBMITTED)
          if (_task.save() != null) {
             println "saved"
          } else {
