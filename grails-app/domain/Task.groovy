@@ -12,7 +12,10 @@ class Task {
    String state // UNSUBMITTED, PENDING, ACTIVE, DONE, ERROR, FAILED
 
    static constraints = {
-      unsubmitted(nullable: true)
+      unsubmitted(unique: true, nullable: false)
+      gridresource(nullable: false)
+      state(nullable, false)
+
       pending(nullable: true)
       active(nullable: true)
       done(nullable: true)

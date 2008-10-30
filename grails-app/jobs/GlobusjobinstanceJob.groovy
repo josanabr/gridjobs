@@ -107,6 +107,19 @@ class GlobusjobinstanceJob{
          trigger.jobDataMap.sync = sync
          trigger.jobDataMap.cronexpression = cronexpression
          trigger.jobDataMap."${config.Config.UNSUBMITTED}" = cdt
+         //
+         // Insert information to 'task'
+         //
+         {
+            print "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Saving data to DB... "
+            Gridresource _gr = Gridresource.findByName(server)
+            Task _task = new Task(gridresource: gr, unsubmitted: cdt, state: config.Config.UNSUBMITTED)
+            if (_task.save() != null) {
+               println "saved"
+            } else {
+               println "doesn't saved"
+            }
+         }
          trigger.jobDataMap.status = config.Config.UNSUBMITTED
          trigger.jobDataMap.minimumthreshold = seconds
          if (mjdm.estimates != null) {

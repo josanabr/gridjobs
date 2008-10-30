@@ -28,12 +28,14 @@ class GlobusjobstatusJob
       def report = ""
       def output = ""
 
+      Task _task
+
       def cdt = new DateTime()
       //println "[GlobusjobstatusJob - execute]\t[${server}] Executing globusjobstatus to [${url}]"
       def status = util.Util.executegetoutput("${globushome}/bin/${config.Config.globusjobstatus} ${url}")
       status = status.split("\n")[0]
 
-      if (status == "" || status == null || status == config.Config.ERROR) {
+      if (status == "" || status == null || status == config.Config.ERROR) { // Error getting the status
          output = totalclean(context,"[ ERROR - ${new DateTime().toLocalTime()}/${server}] Abnormal status -> ${status}")
          report = "FAILED | No output for checking status\n"
          report += "Current status: ${mjdm.status}\n"
@@ -46,10 +48,22 @@ class GlobusjobstatusJob
          println "[GlobusjobstatusJob - execute]\t[${server}] Status ERROR = ${status}"
          _flag = util.quartz.Util.removetrigger(context)
          println "[GlobusjobstatusJob - execute]\t[${server}] Trigger ${context.trigger.name} removed? ${_flag}"
+         // 
+         // Saving the event info into the DB
+         //
+         _task = Task.findByUnsubmitted(mjdm.UNSUBMITTED)
+         _task.exitstatus = config.Config.FAILED
+         _task.output = "Error getting the task status"
+         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating record with id: ${_task.unsubmitted}... "
+         if (_task.save() != null) {
+            println "saved"
+         } else {
+            println "DIDN'T save"
+         }
          println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}] Exiting by error on 'status'"
          return 
       }
-      if (previousstatus == status) {
+      if (previousstatus == status) { // The status hasn't changed
          if (mjdm.estimates != null) {
             //println "[GlobusjobstatusJob - ${server}/${cdt.toLocalTime()}] status -> ${status}"
             if (mjdm.estimates["${status.toUpperCase()}"] + mjdm."${status}" < new DateTime().getMillis()) {
@@ -71,6 +85,18 @@ class GlobusjobstatusJob
             _flag = util.quartz.Util.removetrigger(context)
             println "[GlobusjobstatusJob - execute]\t[${server}] Trigger ${context.trigger.name} removed? ${_flag}"
             // Report the estimated failed!
+            // 
+            // Saving the event info into the DB
+            //
+            _task = Task.findByUnsubmitted(mjdm.UNSUBMITTED)
+            _task.exitstatus = config.Config.FAILED
+            _task.output = "Time exhausted"
+            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating record with id: ${_task.unsubmitted}... "
+            if (_task.save() != null) {
+               println "saved"
+            } else {
+               println "DIDN'T save"
+            }
             println "[GlobusjobstatusJob - execute] [${server}] Exiting due to exhausted time"
             return 
          }
@@ -99,20 +125,17 @@ class GlobusjobstatusJob
             println "[GlobusjobstatusJob - execute] [${server}] transfering estimates"
             trigger.jobDataMap.estimates = mjdm.estimates
          }
-         /*
-         if (!scheduleJobWithTriggerNewName(context,trigger)) { // Scheduling failed
-            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
-            // Delete the old trigger
-            _flag = util.quartz.Util.removetrigger(context)
-            println "[GlobusjobstatusJob - execute]\t[${server}] Trigger remove? ${_flag}"
-            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
-            return
-         }
-         util.quartz.Util.removetrigger(context)
-         */
          if (!scheduleJobWithOldTriggerName(context,trigger)) { // Scheduling failed
+            _task = Task.findByUnsubmitted(mjdm.UNSUBMITTED)
+            _task.exitstatus = config.Config.FAILED
+            _task.output = "Failing scheduling a new quartz trigger"
+            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating record with id: ${_task.unsubmitted}... "
+            if (_task.save() != null) {
+               println "saved"
+            } else {
+               println "DIDN'T save"
+            }
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
-            // Delete the old trigger
             println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
             return
          }
@@ -123,8 +146,16 @@ class GlobusjobstatusJob
       println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Status changed ${previousstatus} -> ${status}"
       mjdm."${status}" = cdt.getMillis()
       mjdm.status = status
+      //
+      // The status changed, then the DB info must be
+      // updated
+      //
+      _task = Task.findByUnsubmitted(mjdm.UNSUBMITTED)
+      _task.state = status
+      _task."${status.toLowerCase()}" = cdt.getMillis()
       if (status == config.Config.DONE || status == config.Config.FAILED) {
-         //println "[${new DateTime().toLocalTime()}/${server}] Job finalized at ${mjdm.server}! ${status}"
+         // Updating record values
+         _task.exitstatus = status
          println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Task finalized"
          _flag = util.quartz.Util.removetrigger(context)
          println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Trigger ${context.trigger.name} removed? ${_flag} "
@@ -137,6 +168,8 @@ class GlobusjobstatusJob
             def start = new DateTime()
             try { 
                output = util.Util.executegetoutput("${globushome}/bin/${config.Config.globusjobgetoutput} ${url}",true,util.Util.st2millis(util.Util.getproperty(config.Config.globusjobgetoutputMAXTIME)))
+               // Updating record values
+               _task.output = output.substring(0,255)
             } catch(Exception e) {
                output = "Time exhausted - No Output"
             }
@@ -161,12 +194,26 @@ class GlobusjobstatusJob
                body report
             }
          }
+         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating record with id ${_task.unsubmitted}... "
+         if (_task.save() != null) {
+            println "saved"
+         } else {
+            println " DIDN'T save"
+         }
          // Report about how good the estimation was
          println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}][${server}/${mjdm.parameters}] Task DONE"
          return 
       } else { // The job still runs
+         //
+         // Saving the record from data defined above
+         //
+         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating record with id: ${_task.unsubmitted}... "
+         if (_task.save() != null) {
+            println "saved"
+         } else {
+            println " DIDN'T save"
+         }
          println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Creating a new trigger"
-         //def trigger = new CronTrigger("${config.Config.jobnameprefix}_${server}-${cdt.getMillis()}","${config.Config.jobgroupprefix}_${server}-${cdt.getMillis()}")
          def trigger = new CronTrigger()
          // Passing "all" parameters from the invoker trigger 
          trigger.setJobName(config.Config.jobstatusname)
@@ -192,24 +239,20 @@ class GlobusjobstatusJob
             trigger.jobDataMap.estimates = mjdm.estimates
          }
 
-/*
-         if (!scheduleJobWithTriggerNewName(context,trigger)) { // Scheduling failed
-            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
-            // Delete the old trigger
-            _flag = util.quartz.Util.removetrigger(context)
-            println "[GlobusjobstatusJob - execute]\t[${server}] Trigger remove? ${_flag}"
-            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
-            return
-         }
-         */
          if (!scheduleJobWithOldTriggerName(context,trigger)) { // Scheduling failed
+            _task = Task.findByUnsubmitted(mjdm.UNSUBMITTED)
+            _task.exitstatus = config.Config.FAILED
+            _task.output = "Failing scheduling a new quartz trigger"
+            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating record with id: ${_task.unsubmitted}... "
+            if (_task.save() != null) {
+               println "saved"
+            } else {
+               println "DIDN'T save"
+            }
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
-            // Delete the old trigger
             println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
             return
          }
-         //_flag = util.quartz.Util.removetrigger(context)
-         //println "[GlobusjobstatusJob - execute]\t[${server}] Trigger remove? ${_flag}"
          return
       }
    }
