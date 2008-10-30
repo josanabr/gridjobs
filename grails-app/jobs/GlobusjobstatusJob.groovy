@@ -304,7 +304,7 @@ class GlobusjobstatusJob
 
       trigger.setJobName(config.Config.jobstatusname)
       trigger.setJobGroup(config.Config.jobgroup)
-      trigger.setName(contex.trigger.name)
+      trigger.setName(context.trigger.name)
       trigger.setGroup(context.trigger.group)
       def cronexpression 
       println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrying to schedule a new trigger"
