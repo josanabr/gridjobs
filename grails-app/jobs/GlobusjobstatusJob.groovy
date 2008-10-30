@@ -23,7 +23,7 @@ class GlobusjobstatusJob
       def previousstatus = mjdm.status
       def url = mjdm.url
       def server = mjdm.server
-      println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}/${parameters}]"
+      println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}/${mjdm.parameters}]"
 
       def report = ""
       def output = ""
@@ -45,7 +45,7 @@ class GlobusjobstatusJob
          util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log.err")
          println "[GlobusjobstatusJob - execute]\t[${server}] Status ERROR = ${status}"
          _flag = util.quartz.Util.removetrigger(context)
-         println "[GlobusjobstatusJob - execute]\t[${server}] Trigger removed? ${_flag}"
+         println "[GlobusjobstatusJob - execute]\t[${server}] Trigger ${context.trigger.name} removed? ${_flag}"
          println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}] Exiting by error on 'status'"
          return 
       }
@@ -69,7 +69,7 @@ class GlobusjobstatusJob
             util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log.err")
             println "[GlobusjobstatusJob - execute]\t[${server}] Exceeded time"
             _flag = util.quartz.Util.removetrigger(context)
-            println "[GlobusjobstatusJob - execute]\t[${server}] Trigger removed? ${_flag}"
+            println "[GlobusjobstatusJob - execute]\t[${server}] Trigger ${context.trigger.name} removed? ${_flag}"
             // Report the estimated failed!
             println "[GlobusjobstatusJob - execute] [${server}] Exiting due to exhausted time"
             return 
@@ -127,7 +127,7 @@ class GlobusjobstatusJob
          //println "[${new DateTime().toLocalTime()}/${server}] Job finalized at ${mjdm.server}! ${status}"
          println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Task finalized"
          _flag = util.quartz.Util.removetrigger(context)
-         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Trigger removed? ${_flag} "
+         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Trigger ${context.trigger.name} removed? ${_flag} "
          if (mjdm.lock) {
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Removing lock file"
             util.Util.deletelock(mjdm.server)
@@ -317,6 +317,7 @@ class GlobusjobstatusJob
       trigger.setCronExpression(cronexpression)
       try { 
          quartzScheduler.scheduleJob(trigger)
+         println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} created!"
       } catch (Exception e) {
          cdt = new DateTime() 
          println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tSchedule try, failed! (${counter}/${MAXTRIES})"
