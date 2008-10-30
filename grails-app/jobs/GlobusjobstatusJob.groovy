@@ -309,7 +309,7 @@ class GlobusjobstatusJob
       def cronexpression 
       println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrying to schedule a new trigger"
       if (util.quartz.Util.removetrigger(context)) {
-         println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} removed!"
+         //println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} removed!"
       } else {
          println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} DOESN'T removed!"
       }
@@ -317,7 +317,7 @@ class GlobusjobstatusJob
       trigger.setCronExpression(cronexpression)
       try { 
          quartzScheduler.scheduleJob(trigger)
-         println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} created!"
+         //println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tTrigger ${trigger.name} created!"
       } catch (Exception e) {
          cdt = new DateTime() 
          println "[GlobusjobstatusJob - scheduleJobWithOldTriggerName]\tSchedule try, failed! (${counter}/${MAXTRIES})"
