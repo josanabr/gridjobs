@@ -1,5 +1,5 @@
 class Gridresource {
-   static hasMany = [jobstates:Jobstate, task: Task, taskestimationtime: Taskestimationtime, application: Application]
+   static hasMany = [jobstates:Jobstate, task: Task, taskestimationtime: Taskestimationtime, application: Application, accounting: Accountingresource, characteristics: Resourcecharacteristics]
 
    String headnode // komolongma.ece.uprm.edu
    String name // komolongma.ece.uprm.edu

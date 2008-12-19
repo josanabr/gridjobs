@@ -1,6 +1,7 @@
 import org.joda.time.DateTime
 
 class BootStrap {
+     def monitorService
 
      def init = { servletContext ->
       def starttime 
@@ -114,6 +115,11 @@ class BootStrap {
             }
          }
       }
+      starttime = new DateTime()
+      monitorService.monitorgridresources()
+      endtime = new DateTime()
+      println "[Bootstrap] Elapsed time during initial resource monitoring: ${endtime.millis - starttime.millis} ms."
+
      }
      def destroy = {
      }

@@ -1,3 +1,3 @@
-def x = "hola mundo"
+def x = 5000l
 
-println x.substring(0,x.size() - 1)
+println "${x}".getClass().name

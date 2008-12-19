@@ -35,6 +35,11 @@ class GlobusjobinstanceJob{
        def crnexpr = mjdm.crnexpr
        def lock = mjdm.lock
        def sync = mjdm.sync
+       def submittedtime = mjdm.submittedtime
+
+       // ---> TASK !!!
+       def task = Task.findBySubmittedtime(submittedtime)
+
        println "[GlobusjobinstanceJob - execute]\t ${server} ${jobmanager} ${function} [<${parameters}>]"
 
        if (lock) { 
@@ -73,6 +78,7 @@ class GlobusjobinstanceJob{
        if (!sync) { // I need to run globus-job-submit (Asynchronous call)
          println "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Asynchronous execution"
          // seconds variable indicates the frequency which the job status will be queried.
+         // Most of the time, the value obtained is approximately two seconds. :-S
          def seconds = util.grid.Util.dryrunaveragetime(server,jobmanager,config.Config.iterations)/1000
          if (seconds == 0) {
             println "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Seconds equals 0. No connection"
@@ -83,12 +89,31 @@ class GlobusjobinstanceJob{
             report += "Function: ${function}\n"
             report += "Parameters: ${parameters}\n"
             util.Util.writelog(report,"${server}/${cdt.toLocalDate()}/${function}-${cdt.getMillis()}.log.err")
-            //print "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Trigger removed? "
-            //def _flag = util.quartz.Util.removetrigger(context)
-            //println " ${_flag}"
-            println "[GlobusjobinstanceJob - execute ${util.joda.Util.datetime()}] [${server}/${parameters}] Exiting with error"
+            println "[GlobusjobinstanceJob - execute ${util.joda.Util.datetime()}] [${server}/${parameters}] Exit on error"
+            // Record the error in the database 
+            task.state = 'FAILED'
+            task.exitstatus = 'FAILED'
+
+            def ar = Accountingresource.findByInitialtime(submittedtime)
+            ar.status = false
+            ar.endtime = new DateTime().toDate()
+
+            task.save()
+            ar.save()
+
+            if (!CronExpression.isValidExpression(crnexpr)) {
+               println "[${new DateTime().toLocalTime()}] =>Trigger removed [${server}] (SYNC)"
+               util.quartz.Util.removetrigger(context)
+            }
+
             return
          }
+         //
+         // ----------------> PENDING! <----------------
+         // Change '1' by a value retrieved from a config file.
+         // For example, application.properties
+         // Check 'GlobusjobstatusJob'
+         //
          seconds = util.Util.maximum(config.Config.minimumthreshold, (int)(seconds + 1))
          println "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Suggested monitor frequency in seconds ${seconds}"
          def cronexpression = new CronExpression(util.quartz.Util.createcronexpression("NOW+${seconds}s"))
@@ -107,19 +132,15 @@ class GlobusjobinstanceJob{
          trigger.jobDataMap.sync = sync
          trigger.jobDataMap.cronexpression = cronexpression
          trigger.jobDataMap."${config.Config.UNSUBMITTED}" = cdt
+         trigger.jobDataMap.submittedtime = submittedtime
          //
-         // Inserting information to 'task' table
+         // Updating information to 'task' table
          //
-         print "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Saving data to DB... "
          Gridresource _gr = Gridresource.findByName(server)
-         Task _task = new Task(gridresource: _gr, unsubmitted: cdt, state: config.Config.UNSUBMITTED)
-         if (_task.save() != null) {
-            println "saved"
-         } else {
-            println "doesn't saved"
-         }
-         //
-         //
+         task.unsubmitted = cdt
+         task.lastvisit = new DateTime(cdt).toDate()
+         task.state = config.Config.UNSUBMITTED
+
          trigger.jobDataMap.status = config.Config.UNSUBMITTED
          trigger.jobDataMap.minimumthreshold = seconds
          if (mjdm.estimates != null) {
@@ -133,7 +154,6 @@ class GlobusjobinstanceJob{
             println "[${new DateTime().toLocalTime()}] =>Trigger removed [${server}] (SYNC)"
             util.quartz.Util.removetrigger(context)
          }
-         //trigger.setCronExpression( new CronExpression(util.quartz.Util.createcronexpression("NOW+${seconds}s")))
          cdt = new DateTime().getMillis()
          trigger.name = "${config.Config.jobnameprefix}_${cdt}" 
          trigger.group = "${config.Config.jobgroupprefix}_${cdt}"
@@ -141,9 +161,26 @@ class GlobusjobinstanceJob{
          try {
             def _date = quartzScheduler.scheduleJob(trigger)
             println "[GlobusjobinstanceJob - execute]\t[${server}/${parameters}] The ${trigger.name}/${trigger.group} will be launched on ${_date}"
+            task.nextvisit = _date
+            print "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Saving data to DB... "
+            if (task.save() != null) {
+               println "saved"
+            } else {
+               println "doesn't saved"
+            }
          } catch (org.quartz.SchedulerException e) {
             println "[GlobusjobinstanceJob - execute]\t[${server}/${parameters}]Exception scheduling the trigger ${trigger.name}/${trigger.group}"
-            //util.quartz.Util.removetrigger(context)
+            task.state = 'FAILED'
+            task.exitstatus = 'FAILED'
+            print "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Saving data exception to DB... "
+            if (task.save() != null) {
+               println "saved"
+            } else {
+               println "doesn't saved"
+            }
+            // Though, the local scheduler fails during the process to schedule the task monitor instance
+            // nothing can be said about how the task will be performed in the remote resource.
+            // Then, the accouting resource instance can not be modified.
          }
          println "[GlobusjobinstanceJob - execute ${util.joda.Util.datetime()}] [${server}/${parameters}] DONE"
          return 

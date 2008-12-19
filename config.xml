@@ -18,4 +18,13 @@
 <scripthome value="/home/jas/src/grails/gridjobs/scripts/R"/>
 <imgdir value="images"/>
 <rscriptpath value="/usr/bin/Rscript"/>
+<statistics>
+   <threshold> 
+      <days value="7"/>
+      <hours value="0"/>
+      <minutes value="0"/>
+      <seconds value="0"/>
+   </threshold>
+</statistics>
+
 </configuration>
