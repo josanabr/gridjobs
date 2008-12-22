@@ -76,6 +76,7 @@ class GlobusjobinstanceJob{
        }
 
        if (!sync) { // I need to run globus-job-submit (Asynchronous call)
+         def status = config.Config.UNSUBMITTED
          println "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Asynchronous execution"
          // seconds variable indicates the frequency which the job status will be queried.
          // Most of the time, the value obtained is approximately two seconds. :-S
@@ -95,7 +96,7 @@ class GlobusjobinstanceJob{
             task.exitstatus = 'FAILED'
 
             def ar = Accountingresource.findByInitialtime(submittedtime)
-            ar.status = false
+            ar.status = 1
             ar.endtime = new DateTime().toDate()
 
             task.save()
@@ -114,7 +115,8 @@ class GlobusjobinstanceJob{
          // For example, application.properties
          // Check 'GlobusjobstatusJob'
          //
-         seconds = util.Util.maximum(config.Config.minimumthreshold, (int)(seconds + 1))
+         def threshold = util.Util.st2millis(util.Util.getproperty(config.Config."${status}${config.Config.THRESHOLD}")) / 1000
+         seconds = util.Util.maximum(config.Config.minimumthreshold, (int) threshold )
          println "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Suggested monitor frequency in seconds ${seconds}"
          def cronexpression = new CronExpression(util.quartz.Util.createcronexpression("NOW+${seconds}s"))
          cdt = new DateTime().getMillis()

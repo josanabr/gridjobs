@@ -47,7 +47,7 @@ implements remote.Globusjob {
                           parameters: trigger.jobDataMap.parameters,
                           function: trigger.jobDataMap.function)
       task.save()
-      def ar = new Accoutingresource(gridresource: gr, initialtime: cdt, status: true)
+      def ar = new Accountingresource(gridresource: gr, initialtime: cdt, status: 0)
       ar.save()
 
 

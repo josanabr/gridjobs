@@ -58,7 +58,10 @@ class GlobusjobstatusJob
 
          def ar = Accountingresource.findByInitialtime(submittedtime)
          ar.endtime = task.lastvisit
-         ar.status = false
+         if (status == "" || status == null) 
+            ar.status = 1
+         else
+            ar.status = -1 
 
          // Making persistent the new data
          print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record with id: ${task.submittedtime}... "
@@ -113,7 +116,7 @@ class GlobusjobstatusJob
             }
 
             ar.endtime = cdt.toDate()
-            ar.status = false 
+            ar.status = -1  
             print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Accountingresource' record with id: ${_task.unsubmitted}... "
             if (ar.save() != null) {
                println "saved"
@@ -170,7 +173,9 @@ class GlobusjobstatusJob
          return // The status did not change
       } 
       // Status changed!
-      println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Status changed ${previousstatus} -> ${status}"
+      def threshold = util.Util.st2millis(util.Util.getproperty(config.Config."${status}${config.Config.THRESHOLD}")) / 1000
+      def seconds = util.Util.maximum(config.Config.minimumthreshold, (int) threshold )
+      println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Status changed ${previousstatus} -> ${status} (${seconds}s)"
       mjdm."${status}" = cdt.getMillis()
       mjdm.status = status
       //
@@ -211,7 +216,7 @@ class GlobusjobstatusJob
          } else { // status == config.Config.FAILED
                keys += util.grid.Util.previousstates(previousstatus)
                keys += previousstatus
-               ar.status = false
+               ar.status = -1
          }
          keys += status
          report = "${status} \n${util.Util.createreport(mjdm as HashMap,keys)} \n${output}"
@@ -254,7 +259,7 @@ class GlobusjobstatusJob
          trigger.jobDataMap.parameters = mjdm.parameters
          trigger.jobDataMap.lock = mjdm.lock
          trigger.jobDataMap.status = status
-         trigger.jobDataMap.minimumthreshold = mjdm.minimumthreshold
+         trigger.jobDataMap.minimumthreshold = seconds
          trigger.jobDataMap."${status}" = mjdm."${status}" 
          trigger.jobDataMap.submittedtime = submittedtime
          if (status == config.Config.PENDING) {
@@ -383,7 +388,7 @@ class GlobusjobstatusJob
       def report = ""
       def mjdm = context.getMergedJobDataMap()
       def server = mjdm.server
-      def minimumthreshold = mjdm.minimumthreshold
+      def minimumthreshold = trigger.jobDataMap.minimumthreshold 
 
       trigger.setJobName(config.Config.jobstatusname)
       trigger.setJobGroup(config.Config.jobgroup)
