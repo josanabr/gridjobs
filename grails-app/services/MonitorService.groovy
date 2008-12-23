@@ -49,8 +49,8 @@ class MonitorService {
             }
          }
       } catch (Exception e) {
-         println "[MonitorService - monitorgridresources] \t Exception reading XML attribute from file ${xmlfilename}"
-         println "[MonitorService - monitorgridresources] \t ${e}"
+         println "[MonitorService - monitorgridresource] \t Exception reading XML attribute from file ${xmlfilename}"
+         println "[MonitorService - monitorgridresource] \t ${e}"
          returnedvalue++ 
          return returnedvalue
       }
@@ -65,7 +65,10 @@ class MonitorService {
          rc.cpuspeed = cpuspeed
          lastmodified = currenttime.toDate()
       }
-      rc.save()
+      if (rc.save() == null) {
+         println "[MonitorService - monitorgridresource] Saving failed! the data from ${gr.name} grid resource"
+         println "[MonitorService - monitorgridresource] \t cpupernode: ${cpupernode} numnodes: ${numnodes} cpuspeed: ${cpuspeed}"
+      }
 
       /*
       The lines below intend to keep a track about the resource status.
