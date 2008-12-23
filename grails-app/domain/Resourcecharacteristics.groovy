@@ -15,7 +15,7 @@ class Resourcecharacteristics {
    Date lastmodified
 
    static constraints = {
-      gridresource(nullable:true)
+      gridresource(nullable:false)
       numnodes(nullable:false)
       cpupernode(nullable:false)
       cpuspeed(nullable:false)
