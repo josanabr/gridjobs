@@ -74,7 +74,7 @@ class MonitorService {
       // I got the most recent
       def rc = results.first()
 
-      println "[DEBUGGIIIIIIIINNNNNNNNNNNNGGGGGGGGG] ${rc.numnodes}"
+     
 
       if ( (rc.numnodes != numnodes) ||  (rc.cpupernode != cpupernode) || (rc.cpuspeed != cpuspeed) ) {
          rc.numnodes = numnodes
