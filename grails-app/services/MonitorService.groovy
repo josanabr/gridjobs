@@ -45,7 +45,7 @@ class MonitorService {
          if (dead == "")
             dead = 0;
          else 
-            dead = new Integer(dead)
+            dead = dead.split(",").size()
          cpupernode 
          cpuspeed
          xmlreader.cluster[0].host_hn[0].hardware.each { hw ->
