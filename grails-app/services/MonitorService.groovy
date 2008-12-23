@@ -39,13 +39,13 @@ class MonitorService {
       def cpupernode
       def cpuspeed
       try {
-         numnodes = xmlreader.cluster[0].host_hn.size()
+         numnodes = new Integer(xmlreader.cluster[0].host_hn.size())
          cpupernode 
          cpuspeed
          xmlreader.cluster[0].host_hn[0].hardware.each { hw ->
             if (hw.'@name' == "CpuInfo") {
-               cpupernode = hw.'@number'
-               cpuspeed = hw.'@speeds'
+               cpupernode = new Integer(hw.'@number')
+               cpuspeed = new Double(hw.'@speeds')
             }
          }
       } catch (Exception e) {
@@ -56,8 +56,6 @@ class MonitorService {
       }
 
       def rc = Resourcecharacteristics.findByGridresource(gr)
-
-      println "GR ${gr}"
 
       if (rc == null) {
          rc = new Resourcecharacteristics(gridresource:gr, numnodes: numnodes, cpupernode: cpupernode, cpuspeed: cpuspeed, lastmodified: currenttime.toDate())
