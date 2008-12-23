@@ -63,7 +63,7 @@ class MonitorService {
          rc.numnodes = numnodes
          rc.cpupernode = cpupernode
          rc.cpuspeed = cpuspeed
-         lastmodified = currenttime.toDate()
+         rc.lastmodified = currenttime.toDate()
       }
 
       if (rc.save() == null) {
