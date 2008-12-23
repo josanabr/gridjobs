@@ -46,6 +46,7 @@ class MonitorService {
             dead = 0;
          else 
             dead = dead.split(",").size()
+         println "[MonitorService -  monitorgridresource] \t dead ${dead}"
          cpupernode 
          cpuspeed
          xmlreader.cluster[0].host_hn[0].hardware.each { hw ->
