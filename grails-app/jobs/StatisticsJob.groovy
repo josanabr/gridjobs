@@ -5,6 +5,7 @@ ${HOME}/src/analyzer-input directory.
 */
 
 import org.joda.time.DateTime
+import org.quartz.CronExpression
 
 class StatisticsJob{
     def cronExpression = "0 0 0/1 * * ?"
