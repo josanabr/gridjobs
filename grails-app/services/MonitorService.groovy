@@ -55,14 +55,27 @@ class MonitorService {
          return returnedvalue
       }
 
+      def rc = Resourcecharacteristics.findByGridresource(gr)
+
+      if (rc == null) {
+         rc = new Resourcecharacteristics(Gridresource:gr, numnodes: numnodes, cpupernode: cpupernod, cpuspeed: cpuspeed, lastmodified: currenttime.toDate())
+      } else {
+         rc.numnodes = numnodes
+         rc.cpupernode = cpupernode
+         rc.cpuspeed = cpuspeed
+         lastmodified = currenttime.toDate()
+      }
+      rc.save()
+
       /*
+      The lines below intend to keep a track about the resource status.
+      Due to difficulties found with GORM, this functionality is abolished.
       def criteria = Resourcecharacteristics.createCriteria()
       def results = criteria.scroll {
          // http://grails.org/Hibernate+Criteria+Builder
          eqProperty("Gridresource","gr")
          order("lastmodified","asc")
       }
-      */
       def results = Resourcecharacteristics.findAll("from resourcecharacteristics where gridresource_id = ? order by lastmodified asc",[gr.id])
       if (results == null) {
          println "[MonitorService - monitorgridresource] Records not found"
@@ -82,6 +95,7 @@ class MonitorService {
          rc.lastmodified = new DateTime().toDate()
          rc.save()
       }
+      */
 
 
       util.Util.deleteFile(xmlfilename)
