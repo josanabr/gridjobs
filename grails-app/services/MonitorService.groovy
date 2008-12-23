@@ -74,7 +74,7 @@ class MonitorService {
       // I got the most recent
       def rc = results.first()
 
-      if (rc.numnodes != numnodes ||  rc.cpupernode != cpupernode || rc.cpuspeed != cpuspeed) {
+      if ( (rc.numnodes != numnodes) ||  (rc.cpupernode != cpupernode) || (rc.cpuspeed != cpuspeed) ) {
          rc.numnodes = numnodes
          rc.cpupernode = cpupernode 
          rc.cpuspeed = cpuspeed
