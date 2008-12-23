@@ -65,9 +65,12 @@ class MonitorService {
          rc.cpuspeed = cpuspeed
          lastmodified = currenttime.toDate()
       }
+
       if (rc.save() == null) {
          println "[MonitorService - monitorgridresource] Saving failed! the data from ${gr.name} grid resource"
          println "[MonitorService - monitorgridresource] \t cpupernode: ${cpupernode} numnodes: ${numnodes} cpuspeed: ${cpuspeed}"
+      } else {
+         println "[MonitorService - monitorgridresource] Saved data of ${gr.name} grid resource"
       }
 
       /*
