@@ -63,16 +63,15 @@ class MonitorService {
          order("lastmodified","asc")
       }
       */
-      def criteria = Gridresource.createCriteria()
-      def results = criteria.scroll {
-         eq("name",gr.name)
-         characteristics {
-            order("lastmodified","asc")
-         }
+      def results = Resourcecharacteristics.findAll("from resourcecharacteristics where gridresource_id = ? order by lastmodified asc",[gr.id])
+      if (results == null) {
+         println "[MonitorService - monitorgridresource] Records not found"
+         return -1
       }
+      println results.get(1).numnodes
       // results has the resources in ascending order
       // I got the most recent
-      def rc = results.first()
+      def rc = results.get(1)
 
      
 
