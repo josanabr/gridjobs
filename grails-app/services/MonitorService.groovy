@@ -69,6 +69,9 @@ class MonitorService {
       if (rc.save() == null) {
          println "[MonitorService - monitorgridresource] Saving failed! the data from ${gr.name} grid resource"
          println "[MonitorService - monitorgridresource] \t cpupernode: ${cpupernode} numnodes: ${numnodes} cpuspeed: ${cpuspeed}"
+         rc.errors.allErrors.each {
+            println it.defaultMessage
+         }
       } else {
          println "[MonitorService - monitorgridresource] Saved data of ${gr.name} grid resource"
       }
