@@ -38,8 +38,14 @@ class MonitorService {
       def numnodes
       def cpupernode
       def cpuspeed
+      def dead
       try {
          numnodes = new Integer(xmlreader.cluster[0].host_hn.size())
+         dead = xmlreader.cluster[0].'@dead'
+         if (dead == "")
+            dead = 0;
+         else 
+            dead = new Integer(dead)
          cpupernode 
          cpuspeed
          xmlreader.cluster[0].host_hn[0].hardware.each { hw ->
@@ -58,10 +64,11 @@ class MonitorService {
       def rc = Resourcecharacteristics.findByGridresource(gr)
 
       if (rc == null) {
-         rc = new Resourcecharacteristics(gridresource:gr, numnodes: numnodes, cpupernode: cpupernode, cpuspeed: cpuspeed, lastmodified: currenttime.toDate())
+         rc = new Resourcecharacteristics(gridresource:gr, numnodes: numnodes, cpupernode: cpupernode, dead: dead, cpuspeed: cpuspeed, lastmodified: currenttime.toDate())
       } else {
          rc.numnodes = numnodes
          rc.cpupernode = cpupernode
+         rc.dead = dead
          rc.cpuspeed = cpuspeed
          rc.lastmodified = currenttime.toDate()
       }

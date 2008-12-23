@@ -11,12 +11,14 @@ class Resourcecharacteristics {
    Gridresource gridresource
    int numnodes
    int cpupernode
+   int dead
    double cpuspeed
    Date lastmodified
 
    static constraints = {
       gridresource(nullable:false)
       numnodes(nullable:false)
+      dead(nullable:false)
       cpupernode(nullable:false)
       cpuspeed(nullable:false)
       lastmodified(nullable:false)
