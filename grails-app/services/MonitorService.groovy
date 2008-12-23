@@ -58,7 +58,7 @@ class MonitorService {
       def criteria = Resourcecharacteristics.createCriteria()
       def results = criteria.scroll {
          // http://grails.org/Hibernate+Criteria+Builder
-         eqProperty("gridresource","gr")
+         eqProperty("Gridresource","gr")
          order("lastmodified","asc")
       }
       // results has the resources in ascending order
