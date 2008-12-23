@@ -24,7 +24,7 @@ class MonitorService {
          println "[MonitorService - monitorgridresource] \t Exception retrieving data from ${gr.name}"
          println "[MonitorService - monitorgridresource] \t ${e}"
          returnedvalue++ 
-         return
+         return returnedvalue
       }
       def xmlreader
       try { 
@@ -33,7 +33,7 @@ class MonitorService {
          println "[MonitorService - monitorgridresource] \t Exception reading file ${xmlfilename}"
          println "[MonitorService - monitorgridresource] \t ${e}"
          returnedvalue++ 
-         return
+         return returnedvalue
       }
       def numnodes
       def cpupernode
@@ -52,7 +52,7 @@ class MonitorService {
          println "[MonitorService - monitorgridresources] \t Exception reading XML attribute from file ${xmlfilename}"
          println "[MonitorService - monitorgridresources] \t ${e}"
          returnedvalue++ 
-         return
+         return returnedvalue
       }
 
       def criteria = Resourcecharacteristics.createCriteria()
