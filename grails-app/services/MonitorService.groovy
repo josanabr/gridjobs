@@ -82,7 +82,7 @@ class MonitorService {
     int monitorgridresources() {
        def returnedvalue = 0
        println "[MonitorService - monitorgridresources ${util.joda.Util.datetime()}]" 
-       Gridresource grlist = Gridresource.list()
+       def grlist = Gridresource.list()
        grlist.each { gr -> 
          returnedvalue += monitorgridresource(gr)
        }
