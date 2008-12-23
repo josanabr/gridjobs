@@ -7,7 +7,7 @@ Periodic monitoring over the resources is carry out due to possible suddenly cha
 */
 
 class MonitorJob {
-    def timeout = 3600000l // execute job once in one hour
+    def timeout = 300l // execute job once in one hour
     def monitorService
 
 
