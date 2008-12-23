@@ -57,6 +57,8 @@ class MonitorService {
 
       def rc = Resourcecharacteristics.findByGridresource(gr)
 
+      println "GR ${gr}"
+
       if (rc == null) {
          rc = new Resourcecharacteristics(Gridresource:gr, numnodes: numnodes, cpupernode: cpupernode, cpuspeed: cpuspeed, lastmodified: currenttime.toDate())
       } else {
