@@ -60,7 +60,7 @@ class MonitorService {
       println "GR ${gr}"
 
       if (rc == null) {
-         rc = new Resourcecharacteristics(Gridresource:gr, numnodes: numnodes, cpupernode: cpupernode, cpuspeed: cpuspeed, lastmodified: currenttime.toDate())
+         rc = new Resourcecharacteristics(gridresource:gr, numnodes: numnodes, cpupernode: cpupernode, cpuspeed: cpuspeed, lastmodified: currenttime.toDate())
       } else {
          rc.numnodes = numnodes
          rc.cpupernode = cpupernode
