@@ -12,7 +12,7 @@
    <value>ACTIVE</value>
 </states>
 <contactinfo>
-   <contact firstname="Rafael" lastname="Arce" email="rafael.arce@upr.edu"/>
+   <!-- <contact firstname="Rafael" lastname="Arce" email="rafael.arce@upr.edu"/> -->
    <contact firstname="John" lastname="Sanabria" email="john.sanabria@ece.uprm.edu"/>
 </contactinfo>
 <scripthome value="/home/jas/src/grails/gridjobs/scripts/R"/>
