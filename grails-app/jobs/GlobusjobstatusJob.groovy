@@ -110,7 +110,7 @@ class GlobusjobstatusJob
             task.exitstatus = config.Config.FAILED
             task.output = "Time exhausted"
             task.lastvisit = cdt.toDate()
-            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record with id: ${_task.unsubmitted}... "
+            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record with id: ${task.unsubmitted}... "
             if (task.save() != null) {
                println "saved"
             } else {
@@ -119,7 +119,7 @@ class GlobusjobstatusJob
 
             ar.endtime = cdt.toDate()
             ar.status = -1  
-            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Accountingresource' record with id: ${_task.unsubmitted}... "
+            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Accountingresource' record with id: ${task.unsubmitted}... "
             if (ar.save() != null) {
                println "saved"
             } else {
