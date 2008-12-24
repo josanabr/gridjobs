@@ -12,5 +12,6 @@ class Accountingresource {
    static constraints = {
       gridresource(nullable:false)
       initialtime(unique:true, nullable:false)
+      endtime(nullable:false)
    }
 }
