@@ -30,8 +30,8 @@ class GlobusjobstatusJob
       def output = ""
 
       //Task task = Task.findBySubmittedtime(submittedtime)
-       println "[GlobusjobstatusJob - execute] submittedtime -> ${submittedtime}"
-       def task = Task.findBySubmittedtime(submittedtime)
+      def task = Task.findBySubmittedtime(submittedtime)
+      def ar = Accountingresource.findByInitialtime(submittedtime)
 
       def cdt = new DateTime()
       //println "[GlobusjobstatusJob - execute]\t[${server}] Executing globusjobstatus to [${url}]"
@@ -58,7 +58,6 @@ class GlobusjobstatusJob
          task.output = "Error getting the task status"
          task.lastvisit = cdt.toDate()
 
-         def ar = Accountingresource.findByInitialtime(submittedtime)
          ar.endtime = task.lastvisit
          if (status == "" || status == null) 
             ar.status = 1
