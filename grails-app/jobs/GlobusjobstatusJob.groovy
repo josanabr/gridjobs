@@ -142,6 +142,7 @@ class GlobusjobstatusJob
          trigger.jobDataMap.status = status
          trigger.jobDataMap."${status}" = mjdm."${status}" 
          trigger.jobDataMap.minimumthreshold = mjdm.minimumthreshold
+         trigger.jobDataMap.submittedtime = mjdm.submittedtime
 
          task.lastvisit = cdt.toDate()
          if (task.save() == null) {
