@@ -188,7 +188,7 @@ class GlobusjobstatusJob
       task."${status.toLowerCase()}" = cdt.getMillis()
       task.lastvisit = cdt.toDate()
       if (status == config.Config.DONE || status == config.Config.FAILED) {
-         def ar = Accountingresource.findByInitialtime(submittedtime)
+         //def ar = Accountingresource.findByInitialtime(submittedtime)
          ar.endtime = cdt.toDate()
          // Updating record values
          task.exitstatus = status
