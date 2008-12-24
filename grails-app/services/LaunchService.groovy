@@ -8,6 +8,7 @@ implements remote.Globusjob {
     boolean transactional = false
     static expose = ['hessian']
     def quartzScheduler
+    def resourcemanagerService
 
     //def jobname = "GlobusjobinstanceJob"
     def jobname = config.Config.jobname
@@ -25,6 +26,7 @@ implements remote.Globusjob {
    String execute(String server, String jobmanager, String parameters, String when, boolean lock, boolean sync) {
       println "[LaunchService - execute ${util.joda.Util.datetime()}] ${server} ${jobmanager} ${parameters} SYNC? ${sync}"
       def cronexpression = util.quartz.Util.createcronexpression(when)
+
 
       Trigger trigger = new CronTrigger()
       trigger.setJobName(jobname)
@@ -64,6 +66,7 @@ implements remote.Globusjob {
 
       println "[LaunchService - execute] Scheduling trigger ${trigger.name}/${trigger.group}"
       quartzScheduler.scheduleJob(trigger)
+      resourcemanagerService.allocatenode(server)
       println "[LaunchService - execute ${util.joda.Util.datetime()}] trigger ${trigger.name}/${trigger.group}"
 
       return "${cdt}"

@@ -7,6 +7,7 @@ import org.quartz.CronTrigger
 class GlobusjobinstanceJob{
    static triggers =  { }
    def quartzScheduler
+   def resourcemanagerService
    def group = config.Config.jobgroup
    def globushome = config.Config.globushome
    
@@ -99,6 +100,8 @@ class GlobusjobinstanceJob{
             ar.status = 1
             ar.endtime = new DateTime().toDate()
 
+            resourcemanagerService.releasenode(server)
+
             task.save()
             ar.save()
 
@@ -138,7 +141,6 @@ class GlobusjobinstanceJob{
          //
          // Updating information to 'task' table
          //
-         Gridresource _gr = Gridresource.findByName(server)
          task.unsubmitted = cdt
          task.lastvisit = new DateTime(cdt).toDate()
          task.state = config.Config.UNSUBMITTED
@@ -180,6 +182,10 @@ class GlobusjobinstanceJob{
             } else {
                println "doesn't saved"
             }
+            // it's necessary to release the resource because there won't be any monitoring over this task.
+            // However, it's highly probable that the task keep running on the remote server.
+            // Think of it as an orphaned 'meta-process'
+            resourcemanagerService.releasenode(server)
             // Though, the local scheduler fails during the process to schedule the task monitor instance
             // nothing can be said about how the task will be performed in the remote resource.
             // Then, the accouting resource instance can not be modified.

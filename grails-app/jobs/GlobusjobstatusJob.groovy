@@ -14,6 +14,7 @@ class GlobusjobstatusJob
    def globusjobsubmit = config.Config.globusjobsubmit
    def globushome = config.Config.globushome
    def quartzScheduler
+   def resourcemanagerService
    def mailService
 
    def execute(context) {
@@ -77,6 +78,8 @@ class GlobusjobstatusJob
          } else {
             println "DIDN'T save"
          }
+         println "[GlobusjobstatusJob - execute] Releasing the resource"
+         resourcemanagerService.releasenode(server)
          // notification message
          println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}] Exiting by error on 'status'"
          return 
@@ -125,6 +128,8 @@ class GlobusjobstatusJob
                println "DIDN'T save"
             }
 
+            println "[GlobusjobstatusJob - execute] Releasing the resource"
+            resourcemanagerService.releasenode(server)
             println "[GlobusjobstatusJob - execute] [${server}] Exiting due to exhausted time"
             return 
          }
@@ -168,6 +173,8 @@ class GlobusjobstatusJob
             } else {
                println "DIDN'T save"
             }
+            println "[GlobusjobstatusJob - execute] Releasing the resource"
+            resourcemanagerService.releasenode(server)
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
             println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
             return
@@ -247,6 +254,8 @@ class GlobusjobstatusJob
             println " DIDN'T save"
          }
          // Report about how good the estimation was
+         println "[GlobusjobstatusJob - execute] Releasing the resource"
+         resourcemanagerService.releasenode(server)
          println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}][${server}/${mjdm.parameters}] Task DONE"
          return 
       } else { // The job still runs
@@ -286,6 +295,8 @@ class GlobusjobstatusJob
             } else {
                println "DIDN'T save"
             }
+            println "[GlobusjobstatusJob - execute] Releasing the resource"
+            resourcemanagerService.releasenode(server)
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
             println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
             return

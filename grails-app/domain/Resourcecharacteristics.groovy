@@ -12,6 +12,7 @@ class Resourcecharacteristics {
    int numnodes
    int cpupernode
    int dead
+   int inuse
    double cpuspeed
    Date lastmodified
 
@@ -22,5 +23,6 @@ class Resourcecharacteristics {
       cpupernode(nullable:false)
       cpuspeed(nullable:false)
       lastmodified(nullable:false)
+      inuse(nullable:false)
    }
 }
