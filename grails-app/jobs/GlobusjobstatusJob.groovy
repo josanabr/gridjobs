@@ -30,6 +30,7 @@ class GlobusjobstatusJob
       def output = ""
 
       //Task task = Task.findBySubmittedtime(submittedtime)
+       println "[GlobusjobstatusJob - execute] submittedtime -> ${submittedtime}"
        def task = Task.findBySubmittedtime(submittedtime)
 
       def cdt = new DateTime()
