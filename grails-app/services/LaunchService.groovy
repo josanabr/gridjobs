@@ -46,9 +46,16 @@ implements remote.Globusjob {
       def task = new Task(submittedtime: cdt, gridresource: gr, 
                           parameters: trigger.jobDataMap.parameters,
                           function: trigger.jobDataMap.function)
-      task.save()
+      if (task.save() == null) {
+         println "[LaunchService - ] Problems saving a 'Task' instance (gridresource: ${gr}, parameters: ${trigger.jobDataMap.parameters}, function: ${trigger.jobDataMap.function})"
+      }
       def ar = new Accountingresource(gridresource: gr, initialtime: cdt, status: 0)
-      ar.save()
+      if (ar.save() == null) {
+         println "[LaunchService - execute] Problems saving a 'Accountingresource' instance (gridresource: ${gr}, initialtime: ${cdt})"
+         ar.errors.allErrors.each {
+            println "[LaunchService - execute] \t ${it}"
+         }
+      }
 
 
       trigger.setName("${jobnameprefix}_${server}-${cdt}")
