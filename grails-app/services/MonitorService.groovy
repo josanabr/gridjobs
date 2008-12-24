@@ -46,7 +46,6 @@ class MonitorService {
             dead = 0;
          else 
             dead = dead.split(",").size()
-         println "[MonitorService -  monitorgridresource] \t dead ${dead}"
          cpupernode 
          cpuspeed
          xmlreader.cluster[0].host_hn[0].hardware.each { hw ->
@@ -80,10 +79,7 @@ class MonitorService {
          rc.errors.allErrors.each {
             println "[MonitorService - monitorgridresource] \t ${it}"
          }
-      } else {
-         println "[MonitorService - monitorgridresource] Saved data of ${gr.name} grid resource"
       }
-
       /*
       The lines below intend to keep a track about the resource status.
       Due to difficulties found with GORM, this functionality is abolished.
