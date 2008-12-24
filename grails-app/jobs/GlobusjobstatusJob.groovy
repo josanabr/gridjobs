@@ -29,7 +29,8 @@ class GlobusjobstatusJob
       def report = ""
       def output = ""
 
-      Task task = Task.findBySubmittedtime(submittedtime)
+      //Task task = Task.findBySubmittedtime(submittedtime)
+       def task = Task.findBySubmittedtime(submittedtime)
 
       def cdt = new DateTime()
       //println "[GlobusjobstatusJob - execute]\t[${server}] Executing globusjobstatus to [${url}]"
