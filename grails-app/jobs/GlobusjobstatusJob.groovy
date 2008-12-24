@@ -204,7 +204,7 @@ class GlobusjobstatusJob
          // ---------------------<><><><><><><><><><><><><><>---------------------
          if (status == config.Config.DONE) { // Task successfully finishes
             def start = new DateTime()
-            ar.status = true
+            ar.status = 0
             try { 
                output = util.Util.executegetoutput("${globushome}/bin/${config.Config.globusjobgetoutput} ${url}",true,util.Util.st2millis(util.Util.getproperty(config.Config.globusjobgetoutputMAXTIME)))
                // Updating record values
