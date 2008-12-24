@@ -115,7 +115,7 @@ class GlobusjobinstanceJob{
          // For example, application.properties
          // Check 'GlobusjobstatusJob'
          //
-         def threshold = util.Util.st2millis(util.Util.getproperty(config.Config."${status}${config.Config.THRESHOLD}")) / 1000
+         def threshold = util.Util.st2millis(util.Util.getproperty(config.Config."${status}" + config.Config."${config.Config.THRESHOLD}")) / 1000
          seconds = util.Util.maximum(config.Config.minimumthreshold, (int) threshold )
          println "[GlobusjobinstanceJob - execute]\t [${server}/${parameters}] Suggested monitor frequency in seconds ${seconds}"
          def cronexpression = new CronExpression(util.quartz.Util.createcronexpression("NOW+${seconds}s"))

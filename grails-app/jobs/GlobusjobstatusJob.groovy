@@ -173,7 +173,7 @@ class GlobusjobstatusJob
          return // The status did not change
       } 
       // Status changed!
-      def threshold = util.Util.st2millis(util.Util.getproperty(config.Config."${status}${config.Config.THRESHOLD}")) / 1000
+      def threshold = util.Util.st2millis(util.Util.getproperty(config.Config."${status}" + config.Config."${config.Config.THRESHOLD}")) / 1000
       def seconds = util.Util.maximum(config.Config.minimumthreshold, (int) threshold )
       println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Status changed ${previousstatus} -> ${status} (${seconds}s)"
       mjdm."${status}" = cdt.getMillis()
