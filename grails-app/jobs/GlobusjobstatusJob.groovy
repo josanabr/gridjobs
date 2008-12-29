@@ -62,8 +62,11 @@ class GlobusjobstatusJob
          ar.endtime = task.lastvisit
          if (status == "" || status == null) 
             ar.status = 1
-         else
+         else {
             ar.status = -1 
+            def rc = Resourcecharacteristics.findByGridresource(ar.gridresource)
+            ar.tasksassigned = rc.inuse
+         }
 
          // Making persistent the new data
          print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record with id: ${task.submittedtime}... "
@@ -80,6 +83,7 @@ class GlobusjobstatusJob
          }
          println "[GlobusjobstatusJob - execute] Releasing the resource"
          resourcemanagerService.releasenode(server)
+         cancelclean(context)
          // notification message
          println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}] Exiting by error on 'status'"
          return 
@@ -121,6 +125,8 @@ class GlobusjobstatusJob
 
             ar.endtime = cdt.toDate()
             ar.status = -1  
+            def rc = Resourcecharacteristics.findByGridresource(ar.gridresource)
+            ar.tasksassigned = rc.inuse
             print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Accountingresource' record with id: ${task.unsubmitted}... "
             if (ar.save() != null) {
                println "saved"
@@ -130,6 +136,7 @@ class GlobusjobstatusJob
 
             println "[GlobusjobstatusJob - execute] Releasing the resource"
             resourcemanagerService.releasenode(server)
+            cancelclean(context)
             println "[GlobusjobstatusJob - execute] [${server}] Exiting due to exhausted time"
             return 
          }
@@ -175,6 +182,7 @@ class GlobusjobstatusJob
             }
             println "[GlobusjobstatusJob - execute] Releasing the resource"
             resourcemanagerService.releasenode(server)
+            cancelclean(context)
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
             println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
             return
@@ -226,6 +234,8 @@ class GlobusjobstatusJob
                keys += util.grid.Util.previousstates(previousstatus)
                keys += previousstatus
                ar.status = -1
+               def rc = Resourcecharacteristics.findByGridresource(ar.gridresource)
+               ar.tasksassigned = rc.inuse
          }
          keys += status
          report = "${status} \n${util.Util.createreport(mjdm as HashMap,keys)} \n${output}"
@@ -256,6 +266,7 @@ class GlobusjobstatusJob
          // Report about how good the estimation was
          println "[GlobusjobstatusJob - execute] Releasing the resource"
          resourcemanagerService.releasenode(server)
+         cancelclean(context)
          println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}][${server}/${mjdm.parameters}] Task DONE"
          return 
       } else { // The job still runs
@@ -297,6 +308,7 @@ class GlobusjobstatusJob
             }
             println "[GlobusjobstatusJob - execute] Releasing the resource"
             resourcemanagerService.releasenode(server)
+            cancelclean(context)
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
             println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
             return
@@ -345,6 +357,21 @@ class GlobusjobstatusJob
       }
 
       return output
+   }
+
+   void cancelclean(JobExecutionContext context) {
+      def mjdm = context.getMergedJobDataMap()
+      def server = mjdm.server
+      def url = mjdm.url
+      def output = ""
+
+      util.quartz.Util.removetrigger(context)
+      output = "Cancel\n"
+      output += util.Util.executegetoutput("${globushome}/bin/${config.Config.globusjobcancel} -q ${url}",true)
+      output += "\nClean\n"
+      output += util.Util.executegetoutput("${globushome}/bin/${config.Config.globusjobclean} -q ${url}",true)
+
+      println "[GlobusjobstatusJob - cancelclean] Output: ${output}"
    }
 
    /**
