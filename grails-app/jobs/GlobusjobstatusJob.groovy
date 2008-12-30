@@ -49,9 +49,9 @@ class GlobusjobstatusJob
          report += "Parameters: ${mjdm.parameters}\n"
          report += "Command output (${config.Config.globusjobcancel}): ${output}\n"
          util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log.err")
-         println "[GlobusjobstatusJob - execute]\t[${server}] Status ERROR = ${status}"
+         println "[GlobusjobstatusJob - execute]\t[${server} - ${submittedtime}] Status ERROR = ${status}"
          _flag = util.quartz.Util.removetrigger(context)
-         println "[GlobusjobstatusJob - execute]\t[${server}] Trigger ${context.trigger.name} removed? ${_flag}"
+         println "[GlobusjobstatusJob - execute]\t[${server} - ${submittedtime}] Trigger ${context.trigger.name} removed? ${_flag}"
          // 
          // Saving the event info into the DB
          //
@@ -69,30 +69,30 @@ class GlobusjobstatusJob
          }
 
          // Making persistent the new data
-         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record with id: ${task.submittedtime}... "
+         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Updating 'Task' record with id: ${task.submittedtime}... "
          if (task.save() != null) {
             println "saved"
          } else {
             println "DIDN'T save"
          }
-         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Accoutingresource' record with id: ${ar.initialtime}... "
+         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Updating 'Accoutingresource' record with id: ${ar.initialtime}... "
          if (ar.save() != null) {
             println "saved"
          } else {
             println "DIDN'T save"
          }
-         println "[GlobusjobstatusJob - execute] Releasing the resource"
+         println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
          resourcemanagerService.releasenode(server)
          cancelclean(context)
          // notification message
-         println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server}] Exiting by error on 'status'"
+         println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}] [${server} - ${submittedtime}] Exiting by error on 'status'"
          return 
       }
       if (previousstatus == status) { // The status hasn't changed
          if (mjdm.estimates != null) {
             //println "[GlobusjobstatusJob - ${server}/${cdt.toLocalTime()}] status -> ${status}"
             if (mjdm.estimates["${status.toUpperCase()}"] + mjdm."${status}" < new DateTime().getMillis()) {
-               println "[GlobusjobstatusJob - execute]\t[${server}] Prsched-ESTIMATED failed"
+               println "[GlobusjobstatusJob - execute]\t[${server} - ${submittedtime}] Prsched-ESTIMATED failed"
             }
          }
          def maxwaitingtime = util.Util.st2millis(util.Util.getproperty(config.Config."${status}${config.Config.MAXTIME}"))
@@ -106,17 +106,17 @@ class GlobusjobstatusJob
             report += "Parameters: ${mjdm.parameters}\n"
             report += "Command output (${config.Config.globusjobcancel}): ${output}\n"
             util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log.err")
-            println "[GlobusjobstatusJob - execute]\t[${server}] Exceeded time"
+            println "[GlobusjobstatusJob - execute]\t[${server} - ${submittedtime}] Exceeded time"
             _flag = util.quartz.Util.removetrigger(context)
-            println "[GlobusjobstatusJob - execute]\t[${server}] Trigger ${context.trigger.name} removed? ${_flag}"
+            println "[GlobusjobstatusJob - execute]\t[${server} - ${submittedtime}] Trigger ${context.trigger.name} removed? ${_flag}"
             // Report the estimated failed!
             // 
             // Saving the event info into the DB
             //
             task.exitstatus = config.Config.FAILED
-            task.output = "Time exhausted"
+            task.output = "Time exhausted ${status}"
             task.lastvisit = cdt.toDate()
-            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record with id: ${task.unsubmitted}... "
+            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Updating 'Task' record with id: ${task.unsubmitted}... "
             if (task.save() != null) {
                println "saved"
             } else {
@@ -127,17 +127,17 @@ class GlobusjobstatusJob
             ar.status = -1  
             def rc = Resourcecharacteristics.findByGridresource(ar.gridresource)
             ar.tasksassigned = rc.inuse
-            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Accountingresource' record with id: ${task.unsubmitted}... "
+            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Updating 'Accountingresource' record with id: ${task.unsubmitted}... "
             if (ar.save() != null) {
                println "saved"
             } else {
                println "DIDN'T save"
             }
 
-            println "[GlobusjobstatusJob - execute] Releasing the resource"
+            println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
             resourcemanagerService.releasenode(server)
             cancelclean(context)
-            println "[GlobusjobstatusJob - execute] [${server}] Exiting due to exhausted time"
+            println "[GlobusjobstatusJob - execute] [${server} - ${submittedtime}] Exiting due to exhausted time"
             return 
          }
          // A new trigger is created!
@@ -157,7 +157,7 @@ class GlobusjobstatusJob
 
          task.lastvisit = cdt.toDate()
          if (task.save() == null) {
-            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] ERROR updating 'Task' record with id: ${task.submittedtime}... "
+            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] ERROR updating 'Task' record with id: ${task.submittedtime}... "
          }
          if (status == config.Config.PENDING) {
             trigger.jobDataMap."${config.Config.UNSUBMITTED}" = mjdm."${config.Config.UNSUBMITTED}"
@@ -167,24 +167,24 @@ class GlobusjobstatusJob
          }
          trigger.jobDataMap.url = mjdm.url
          if (mjdm.estimates != null) {
-            println "[GlobusjobstatusJob - execute] [${server}] transfering estimates"
+            println "[GlobusjobstatusJob - execute] [${server} - ${submittedtime}] transfering estimates"
             trigger.jobDataMap.estimates = mjdm.estimates
          }
          if (!scheduleJobWithOldTriggerName(context,trigger)) { // Scheduling failed
             task.exitstatus = config.Config.FAILED
             task.output = "Failing scheduling a new quartz trigger"
             task.lastvisit = cdt.toDate()
-            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record with id: ${task.submittedtime}... "
+            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Updating 'Task' record with id: ${task.submittedtime}... "
             if (task.save() != null) {
                println "saved"
             } else {
                println "DIDN'T save"
             }
-            println "[GlobusjobstatusJob - execute] Releasing the resource"
+            println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
             resourcemanagerService.releasenode(server)
             cancelclean(context)
-            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
-            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
+            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Scheduling failed "
+            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters} - ${submittedtime}] Exit with ERROR"
             return
          }
          return // The status did not change
@@ -192,7 +192,7 @@ class GlobusjobstatusJob
       // Status changed!
       def threshold = util.Util.st2millis(util.Util.getproperty(config.Config."${status}" + config.Config."${config.Config.THRESHOLD}")) / 1000
       def seconds = util.Util.maximum(config.Config.minimumthreshold, (int) threshold )
-      println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Status changed ${previousstatus} -> ${status} (${seconds}s)"
+      println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Status changed ${previousstatus} -> ${status} (${seconds}s)"
       mjdm."${status}" = cdt.getMillis()
       mjdm.status = status
       //
@@ -207,11 +207,11 @@ class GlobusjobstatusJob
          ar.endtime = cdt.toDate()
          // Updating record values
          task.exitstatus = status
-         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Task finalized"
+         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Task finalized"
          _flag = util.quartz.Util.removetrigger(context)
-         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Trigger ${context.trigger.name} removed? ${_flag} "
+         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Trigger ${context.trigger.name} removed? ${_flag} "
          if (mjdm.lock) {
-            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Removing lock file"
+            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Removing lock file"
             util.Util.deletelock(mjdm.server)
          }
          def keys = ["server","jobmanager","function","parameters"]
@@ -225,7 +225,7 @@ class GlobusjobstatusJob
                // Updating record values
                task.output = output.substring(0,255)
             } catch(Exception e) {
-               output = "Time exhausted - No Output"
+               output = "Time exhausted - No Output (${status})"
             }
             def stop = new DateTime()
             mjdm.getoutputtime = stop.getMillis()
@@ -241,36 +241,36 @@ class GlobusjobstatusJob
          report = "${status} \n${util.Util.createreport(mjdm as HashMap,keys)} \n${output}"
          util.Util.writelog(report,"${mjdm.server}/${cdt.toLocalDate()}/${mjdm.function}-${cdt.getMillis()}.log")
 
-         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Sending notification via e-mail"
+         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Sending notification via e-mail"
          def contacts = Contactinfo.list() 
          contacts.each { contact ->
             mailService.sendMail {
                from "gridjobs@gmail.com"
                to contact.email
-               subject 'Report from gridjobs framework'
+               subject "Report from gridjobs framework - ${submittedtime}"
                body report
             }
          }
-         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record with id ${task.submittedtime}... "
+         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Updating 'Task' record with id ${task.submittedtime}... "
          if (task.save() != null) {
             println "saved"
          } else {
             println " DIDN'T save"
          }
-         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Accountingresource' record with id ${ar.initialtime}... "
+         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Updating 'Accountingresource' record with id ${ar.initialtime}... "
          if (ar.save() != null) {
             println "saved"
          } else {
             println " DIDN'T save"
          }
          // Report about how good the estimation was
-         println "[GlobusjobstatusJob - execute] Releasing the resource"
+         println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
          resourcemanagerService.releasenode(server)
          cancelclean(context)
-         println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}][${server}/${mjdm.parameters}] Task DONE"
+         println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}][${server}/${mjdm.parameters} - ${submittedtime}] Task DONE"
          return 
       } else { // The job still runs
-         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Creating a new trigger"
+         println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Creating a new trigger"
          def trigger = new CronTrigger()
          // Passing "all" parameters from the invoker trigger 
          trigger.setJobName(config.Config.jobstatusname)
@@ -293,31 +293,31 @@ class GlobusjobstatusJob
          trigger.jobDataMap.url = mjdm.url
 
          if (mjdm.estimates != null) {
-            println "[GlobusjobstatusJob - ${server}/${cdt.toLocalTime()}] transfering estimates"
+            println "[GlobusjobstatusJob - ${server}/${cdt.toLocalTime()} - ${submittedtime}] transfering estimates"
             trigger.jobDataMap.estimates = mjdm.estimates
          }
 
          if (!scheduleJobWithOldTriggerName(context,trigger)) { // Scheduling failed
             task.exitstatus = config.Config.FAILED
             task.output = "Failing scheduling a new quartz trigger"
-            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record on failure with id: ${task.submittedtime}... "
+            print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Updating 'Task' record on failure with id: ${task.submittedtime}... "
             if (task.save() != null) {
                println "saved"
             } else {
                println "DIDN'T save"
             }
-            println "[GlobusjobstatusJob - execute] Releasing the resource"
+            println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
             resourcemanagerService.releasenode(server)
             cancelclean(context)
-            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Scheduling failed "
-            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters}] Exit with ERROR"
+            println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Scheduling failed "
+            println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}]\t[${server}/${mjdm.parameters} - ${submittedtime}] Exit with ERROR"
             return
          }
          //
          // Saving the record from data defined above
          //
          task.nextvisit = trigger.getNextFireTime()
-         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters}] Updating 'Task' record with id: ${task.submittedtime}... "
+         print "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Updating 'Task' record with id: ${task.submittedtime}... "
          if (task.save() != null) {
             println "saved"
          } else {
@@ -366,12 +366,12 @@ class GlobusjobstatusJob
       def output = ""
 
       util.quartz.Util.removetrigger(context)
-      output = "Cancel\n"
+      output = "Cancel "
       output += util.Util.executegetoutput("${globushome}/bin/${config.Config.globusjobcancel} -q ${url}",true)
-      output += "\nClean\n"
+      output += "\nClean "
       output += util.Util.executegetoutput("${globushome}/bin/${config.Config.globusjobclean} -q ${url}",true)
 
-      println "[GlobusjobstatusJob - cancelclean] Output: ${output}"
+      println "[GlobusjobstatusJob - cancelclean - ${mjdm.submittedtime}] Output: ${output}"
    }
 
    /**
