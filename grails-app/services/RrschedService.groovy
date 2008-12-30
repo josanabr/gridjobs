@@ -37,6 +37,7 @@ implements remote.Scheduler
        if (ss != null) {
           println "[RrschedService - executeTask] 'ss' different of 'null'"
        } else {
+          println "[RrschedService - executeTask] NULL!!!!!!"
           return ""
        }
        def start = new DateTime()
