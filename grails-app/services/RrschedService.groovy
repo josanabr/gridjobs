@@ -7,6 +7,7 @@ implements remote.Scheduler
     boolean transactional = true
     static expose = ['hessian']
     def launchService
+    def resourcemanagerService 
     String schedulername = "round-robin"
 
     /**
@@ -68,8 +69,8 @@ implements remote.Scheduler
                     // in charge of attend the request
        def resourcelistsize = Gridresource.list().size()
        while (true) {
-          def rc = Resourcecharacteristics.findByGridresource(Gridresource.findBySequence(cr))
-          if (rc.available() > 0)
+          def rc = Gridresource.findBySequence(cr)
+          if (resourcemanagerService.available(rc) > 0)
              break
           else {
              cr = (cr % resourcelistsize) + 1
