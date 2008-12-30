@@ -68,7 +68,7 @@ implements remote.Scheduler
                     // in charge of attend the request
        def resourcelistsize = Gridresource.list().size()
        while (true) {
-          def rc = Resourcecharacteristics.findBySequence(cr)
+          def rc = Resourcecharacteristics.findByGridresource(Gridresource.findBySequence(cr))
           if (rc.available() > 0)
              break
           else {
