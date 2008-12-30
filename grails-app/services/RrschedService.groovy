@@ -33,10 +33,8 @@ implements remote.Scheduler
           return ""
        }
        // ss contains a pointer to the current resource to be available.
-       def ss = Schedulerstatus.get(0) // ss: scheduler status
-       if (ss != null) {
-          println "[RrschedService - executeTask] 'ss' different of 'null'"
-       } else {
+       def ss = Schedulerstatus.get(1) // ss: scheduler status
+       if (ss == null) {
           println "[RrschedService - executeTask] NULL!!!!!!"
           return ""
        }
