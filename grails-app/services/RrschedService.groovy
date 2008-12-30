@@ -70,7 +70,7 @@ implements remote.Scheduler
        def resourcelistsize = Gridresource.list().size()
        while (true) {
           def rc = Gridresource.findBySequence(cr)
-          if (resourcemanagerService.available(rc) > 0)
+          if (resourcemanagerService.availablenodes(rc) > 0)
              break
           else {
              cr = (cr % resourcelistsize) + 1
