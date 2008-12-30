@@ -7,8 +7,10 @@ class Gridresource {
    String country // PR, US, JP,
    String organization // AIST, UPRM, SDC.
    String userhome 
+   int sequence
 
    static constraints = {
       name(unique:true,nullable:false)
+      sequence(unique:true,nullable:false)
    }
 }

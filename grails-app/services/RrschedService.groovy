@@ -49,7 +49,7 @@ implements remote.Scheduler
                              parameters: parameters, succeeded: true)
        schedstatistics.save()
        // gs contains the next resource willing to execute the application 
-       def gs = Gridresource.get(cr)   // gs: gridresource
+       def gs = Gridresource.findBySequence(cr)   // gs: gridresource
        def dt = new DateTime()
        println "[RrschedService - executeTask] Task (appname: ${appname} execname: ${execname} parameters: ${params}) send to ${gs.headnode}"
        //returnvalue = launchService.execute(gs.headnode, gs.batchscheduler, parameters, when, lock, sync)
@@ -68,7 +68,7 @@ implements remote.Scheduler
                     // in charge of attend the request
        def resourcelistsize = Gridresource.list().size()
        while (true) {
-          def rc = Resourcecharacteristics.findByGridresource(cr)
+          def rc = Resourcecharacteristics.findBySequence(cr)
           if (rc.available() > 0)
              break
           else {

@@ -12,18 +12,22 @@ class BootStrap {
 
       starttime = new DateTime()
       // Defining the grid resources 
-      def x = new Gridresource(name:'komolongma.ece.uprm.edu',
+      def x 
+      /*
+      x = new Gridresource(name:'komolongma.ece.uprm.edu',
                                headnode:'komolongma.ece.uprm.edu',
                                batchscheduler: 'sge',
                                country: 'PR',
                                userhome: userhome,
                                organization: 'UPRM')
       x.save()
+      */
       x = new Gridresource(name:'rocks-52.sdsc.edu',
                            headnode:'rocks-52.sdsc.edu',
                            batchscheduler: 'sge',
                            country: 'US',
                            userhome: userhome,
+                           sequence: 1,
                            organization: 'SDSC')
       x.save()
       x = new Gridresource(name:'rocks-153.sdsc.edu',
@@ -31,6 +35,7 @@ class BootStrap {
                            batchscheduler: 'sge',
                            country: 'US',
                            userhome: userhome,
+                           sequence: 2,
                            organization: 'SDSC')
       x.save()
       x = new Gridresource(name:'sakura.hpcc.jp',
@@ -38,6 +43,7 @@ class BootStrap {
                            batchscheduler: 'sge',
                            country: 'JP',
                            userhome: userhome,
+                           sequence: 3,
                            organization: 'AIST')
       x.save()
       x = new Gridresource(name:'fsvc001.asc.hpcc.jp',
@@ -45,6 +51,7 @@ class BootStrap {
                            batchscheduler: 'sge',
                            country: 'JP',
                            userhome: userhome,
+                           sequence: 4,
                            organization: 'AIST')
       x.save()
 
