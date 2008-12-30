@@ -9,9 +9,28 @@ implements remote.Scheduler
     def launchService
     String schedulername = "round-robin"
 
+    /**
+    WATCH OUT! 'parameters' is a String divided by '|' and it contains three fields 'x|y|z'
+    The field 'x' corresponds to the application name.
+    The field 'y' is the execution name.
+    The field 'z' is a String that contains the application parameters.
+    */
     Object executeTask(String parameters, String when, boolean lock, boolean sync) {
        def returnvalue
+       def appname = ""
+       def execname = ""
+       def params = ""
        println "[RrschedService - executeTask ${util.joda.Util.datetime()}] ${parameters} ${when} SYNC? ${sync}"
+       try { 
+          appname = parameters.split("[|]")[0]
+          execname = parameters.split("[|]")[1]
+          params = parameters.split("[|]")[2]
+       } catch (Exception e) {
+          println "[RrschedService - executeTask] Error parsing the 'parameters' String."
+          println e
+          e.printStackTrace()
+          return ""
+       }
        // ss contains a pointer to the current resource to be available.
        def ss = Schedulerstatus.get(1) // ss: scheduler status
        def start = new DateTime()
@@ -32,8 +51,9 @@ implements remote.Scheduler
        // gs contains the next resource willing to execute the application 
        def gs = Gridresource.get(cr)   // gs: gridresource
        def dt = new DateTime()
-       println "[RrschedService - executeTask] Task (params: ${parameters}) send to ${gs.headnode}"
-       returnvalue = launchService.execute(gs.headnode, gs.batchscheduler, parameters, when, lock, sync)
+       println "[RrschedService - executeTask] Task (appname: ${appname} execname: ${execname} parameters: ${params}) send to ${gs.headnode}"
+       //returnvalue = launchService.execute(gs.headnode, gs.batchscheduler, parameters, when, lock, sync)
+       returnvalue = launchService.execute(gs.headnode, appname, params, execname)
        gs = Gridresource.list().size()
        ss.currentresource = (cr % gs) + 1
        ss.save()
