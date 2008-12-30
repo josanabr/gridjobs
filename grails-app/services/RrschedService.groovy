@@ -34,6 +34,11 @@ implements remote.Scheduler
        }
        // ss contains a pointer to the current resource to be available.
        def ss = Schedulerstatus.get(1) // ss: scheduler status
+       if (ss != null) {
+          println "[RrschedService - executeTask] 'ss' different of 'null'"
+       } else {
+          return ""
+       }
        def start = new DateTime()
        def cr = nextgridresource(ss)     // cr: current resource 
        def stop = new DateTime()
