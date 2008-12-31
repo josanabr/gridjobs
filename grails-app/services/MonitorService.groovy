@@ -61,7 +61,8 @@ class MonitorService {
          return returnedvalue
       }
 
-      def rc = Resourcecharacteristics.findByGridresource(gr)
+      // http://graemerocher.blogspot.com/2008/10/new-gorm-features-coming-in-11.html
+      def rc = Resourcecharacteristics.findByGridresource(gr, [lock:true])
 
       if (rc == null) {
          rc = new Resourcecharacteristics(gridresource:gr, numnodes: numnodes, cpupernode: cpupernode, dead: dead, inuse: 0, cpuspeed: cpuspeed, lastmodified: currenttime.toDate())
@@ -73,7 +74,8 @@ class MonitorService {
          rc.lastmodified = currenttime.toDate()
       }
 
-      if (rc.save() == null) {
+      // http://docs.huihoo.com/grails/1.0/guide/single.html#5.3.5 Pessimistic and Optimistic Locking
+      if (rc.save(flush: true) == null) {
          println "[MonitorService - monitorgridresource] Saving failed! the data from ${gr.name} grid resource"
          println "[MonitorService - monitorgridresource] \t cpupernode: ${cpupernode} numnodes: ${numnodes} cpuspeed: ${cpuspeed}"
          rc.errors.allErrors.each {
