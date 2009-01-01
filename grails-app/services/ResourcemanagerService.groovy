@@ -55,7 +55,7 @@ class ResourcemanagerService {
     int allocatenode(Gridresource gr) {
        // http://graemerocher.blogspot.com/2008/10/new-gorm-features-coming-in-11.html
        def rc = Resourcecharacteristics.findByGridresource(gr, [lock: true])
-       if (availablenodes(gr) > 0) {
+       if ( (rc.numnodes - (rc.dead + rc.inuse)) > 0) {
           rc.inuse++
           // http://grails.org/doc/1.0.x/guide/single.html#5.3.5 Pessimistic and Optimistic Locking
           if (rc.save(flush: true) == null) {
@@ -73,7 +73,22 @@ class ResourcemanagerService {
     }
     int allocatenode(String server) {
        def gr = Gridresource.findByName(server)
-       return allocatenode(gr)
+       def rc = Resourcecharacteristics.findByGridresource(gr, [lock: true])
+       if ( (rc.numnodes - (rc.dead + rc.inuse)) > 0) {
+          rc.inuse++
+          // http://grails.org/doc/1.0.x/guide/single.html#5.3.5 Pessimistic and Optimistic Locking
+          if (rc.save(flush: true) == null) {
+             println "[ResourceManagerService - allocatenode (${util.joda.Util.datetime()})] Error updating the 'rc' record"
+             rc.errors.allErrors.each {
+                println "[ResourceManagerService - allocatenode] \t ${it}"
+             }
+             return -1
+          }
+          return 0
+       } else  {
+          rc.save()
+       }
+       return -1
     }
     // -----------------
 
@@ -94,12 +109,23 @@ class ResourcemanagerService {
     }
     int releasenode(String server) {
        def gr = Gridresource.findByName(server)
-       return releasenode(gr)
+       def rc = Resourcecharacteristics.findByGridresource(gr, [lock: true])
+       rc.inuse--
+       if (rc.save(flush: true) == null) {
+          println "[ResourceManagerService - allocatenode (${util.joda.Util.datetime()})] Error updating the 'rc' record"
+          rc.errors.allErrors.each {
+             println "[ResourceManagerService - allocatenode] \t ${it}"
+          }
+          return -1
+       } else {
+          rc.save()
+       }
+       return 0
     }
     // -----------------
-    Resourcecharacteristics accessrc(Gridresource gr, boolean getting = true, Resourcecharacteristics  rs = null) {
+    Resourcecharacteristics accessrc(Gridresource gr, boolean getting, Resourcecharacteristics rs) {
        Resourcecharacteristics rc = null
-       rc = Resourcecharacteristics.findByGridresource(gr)
+       rc = Resourcecharacteristics.findByGridresource(gr, [lock: true])
        if (getting) {
           return rc
        }
@@ -111,7 +137,7 @@ class ResourcemanagerService {
        rc.cpuspeed = rs.cpuspeed
        rc.lastmodified = rs.lastmodified
 
-       if (rc.save() == null) {
+       if (rc.save(flush: true) == null) {
           println "[ResourceManagerService - accessrc (${util.joda.Util.datetime()})] Error updating the 'rc' record"
           rc.errors.allErrors.each {
              println "[ResourceManagerService - accessrc] \t ${it}"
