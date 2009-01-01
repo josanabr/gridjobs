@@ -74,14 +74,8 @@ implements remote.Scheduler
 
     // int nextgridresource(Schedulerstatus ss) {
     int nextgridresource() {
-       def ss = Schedulerstatus.list().get(0) // ss: scheduler status
-       try {
-          ss.lock()
-       } catch (Exception e) {
-          println "[RrschedService - nextgridresource] ${e}"
-          e.printStackTrace()
-          return -1
-       }
+       //def ss = Schedulerstatus.list().get(0) // ss: scheduler status
+       def ss = Schedulerstatus.findBySequence(1,[lock: true])
        if (ss == null) {
           println "[RrschedService - nextgridresource] NULL!!!!!!"
           return -1

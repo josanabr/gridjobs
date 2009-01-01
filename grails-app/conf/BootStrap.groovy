@@ -58,7 +58,7 @@ class BootStrap {
       endtime = new DateTime()
       println "[Bootstrap] Elapsed time during insertion of records into Gridresource table: ${endtime.millis - starttime.millis} ms."
 
-      x = new Schedulerstatus(currentresource:1)
+      x = new Schedulerstatus(sequence:1, currentresource:1)
       x.save()
 
       starttime = new DateTime()
