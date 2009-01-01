@@ -33,13 +33,16 @@ implements remote.Scheduler
           return ""
        }
        // ss contains a pointer to the current resource to be available.
+       /* 
        def ss = Schedulerstatus.list().get(0) // ss: scheduler status
        if (ss == null) {
           println "[RrschedService - executeTask] NULL!!!!!!"
           return ""
-       }
+       } 
+       */
        def start = new DateTime()
-       def cr = nextgridresource(ss)     // cr: current resource 
+       // def cr = nextgridresource(ss)     // cr: current resource 
+       def cr = nextgridresource()     // cr: current resource 
        def stop = new DateTime()
        if (cr == -1) {
           println "[RrschedService = executeTask] No resources available for executing ${parameters}"
@@ -59,15 +62,30 @@ implements remote.Scheduler
        println "[RrschedService - executeTask] Task (appname: ${appname} execname: ${execname} parameters: ${params}) send to ${gs.headnode}"
        //returnvalue = launchService.execute(gs.headnode, gs.batchscheduler, parameters, when, lock, sync)
        returnvalue = launchService.execute(gs.headnode, appname, params, execname)
+       /*
        gs = Gridresource.list().size()
        ss.currentresource = (cr % gs) + 1
        ss.save()
+       */
        println "[RrschedService - executeTask ${util.joda.Util.datetime()}] ${parameters} ${when} SYNC? ${sync} DONE"
 
        return returnvalue
     }
 
-    int nextgridresource(Schedulerstatus ss) {
+    // int nextgridresource(Schedulerstatus ss) {
+    int nextgridresource() {
+       def ss = Schedulerstatus.list().get(0) // ss: scheduler status
+       try {
+          ss.lock()
+       } catch (Exception e) {
+          println "[RrschedService - nextgridresource] ${e}"
+          e.printStackTrace()
+          return -1
+       }
+       if (ss == null) {
+          println "[RrschedService - nextgridresource] NULL!!!!!!"
+          return -1
+       } 
        def cr = ss.currentresource
        def _cr = cr // '_cr' contains the next resource 
                     // in charge of attend the request
@@ -82,10 +100,15 @@ implements remote.Scheduler
                 // All the resources were considered 
                 // and none was available
                 cr = -1                
-                break
+                ss.save()
+                return cr
              }
           }
        }
+
+       gs = Gridresource.list().size()
+       ss.currentresource = (cr % gs) + 1
+       ss.save()
 
        return cr
     }
