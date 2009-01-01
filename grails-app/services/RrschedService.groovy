@@ -106,8 +106,7 @@ implements remote.Scheduler
           }
        }
 
-       gs = Gridresource.list().size()
-       ss.currentresource = (cr % gs) + 1
+       ss.currentresource = (cr % Gridresource.list().size()) + 1
        ss.save()
 
        return cr
