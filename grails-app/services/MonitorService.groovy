@@ -15,7 +15,7 @@ class MonitorService {
 
     int monitorgridresource(Gridresource gr) {
       def returnedvalue = 0
-      println "[MonitorService - monitorgridresource ${util.joda.Util.datetime()}]" 
+      println "[MonitorService - monitorgridresource ${util.joda.Util.datetime()}] ${gr.name}" 
       def xmlfilename
       def currenttime = new DateTime()
       try { 

@@ -81,7 +81,7 @@ class GlobusjobstatusJob
          } else {
             println "DIDN'T save"
          }
-         println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
+         println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource on server ${server}"
          resourcemanagerService.releasenode(server)
          cancelclean(context)
          // notification message
@@ -134,7 +134,7 @@ class GlobusjobstatusJob
                println "DIDN'T save"
             }
 
-            println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
+            println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource on server ${server}"
             resourcemanagerService.releasenode(server)
             cancelclean(context)
             println "[GlobusjobstatusJob - execute] [${server} - ${submittedtime}] Exiting due to exhausted time"
@@ -180,7 +180,7 @@ class GlobusjobstatusJob
             } else {
                println "DIDN'T save"
             }
-            println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
+            println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource on server ${server}"
             resourcemanagerService.releasenode(server)
             cancelclean(context)
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Scheduling failed "
@@ -264,7 +264,7 @@ class GlobusjobstatusJob
             println " DIDN'T save"
          }
          // Report about how good the estimation was
-         println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
+         println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource on server ${server}"
          resourcemanagerService.releasenode(server)
          cancelclean(context)
          println "[GlobusjobstatusJob - execute ${util.joda.Util.datetime()}][${server}/${mjdm.parameters} - ${submittedtime}] Task DONE"
@@ -306,7 +306,7 @@ class GlobusjobstatusJob
             } else {
                println "DIDN'T save"
             }
-            println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource"
+            println "[GlobusjobstatusJob - execute - ${submittedtime}] Releasing the resource on server ${server}"
             resourcemanagerService.releasenode(server)
             cancelclean(context)
             println "[GlobusjobstatusJob - execute]\t[${server}/${mjdm.parameters} - ${submittedtime}] Scheduling failed "
