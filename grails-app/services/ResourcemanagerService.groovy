@@ -152,7 +152,7 @@ class ResourcemanagerService {
              Thread.sleep(randomwaitingtime)
              counter++
           }
-          if (counter > maxtries) 
+          if (counter > maxtries) {
              println "[ResourceManagerService - releasenode] Maximum number of tries reached"
              return -1 // maximum number of tries reached
           }
