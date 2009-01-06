@@ -22,8 +22,8 @@ environments {
 	}
 	test {
 		dataSource {
-			dbCreate = "update"
-			url = "jdbc:postgresql:grailstest"
+			dbCreate = "create-drop"
+			url = "jdbc:postgresql:gjtest"
 		}
 	}
 	production {
