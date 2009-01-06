@@ -22,7 +22,7 @@ environments {
 	}
 	test {
 		dataSource {
-			dbCreate = "create-drop"
+			dbCreate = "update"
 			url = "jdbc:postgresql:gjtest"
 		}
 	}

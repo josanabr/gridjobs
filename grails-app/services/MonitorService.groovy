@@ -75,12 +75,18 @@ class MonitorService {
       }
 
       // http://docs.huihoo.com/grails/1.0/guide/single.html#5.3.5 Pessimistic and Optimistic Locking
-      if (rc.save(flush: true) == null) {
-         println "[MonitorService - monitorgridresource] Saving failed! the data from ${gr.name} grid resource"
-         println "[MonitorService - monitorgridresource] \t cpupernode: ${cpupernode} numnodes: ${numnodes} cpuspeed: ${cpuspeed}"
-         rc.errors.allErrors.each {
-            println "[MonitorService - monitorgridresource] \t ${it}"
+      try { 
+         if (rc.save(flush: true) == null) {
+            println "[MonitorService - monitorgridresource] Saving failed! the data from ${gr.name} grid resource"
+            println "[MonitorService - monitorgridresource] \t cpupernode: ${cpupernode} numnodes: ${numnodes} cpuspeed: ${cpuspeed}"
+            rc.errors.allErrors.each {
+               println "[MonitorService - monitorgridresource] \t ${it}"
+            }
          }
+      } catch (Exception e) {
+         println "[MonitorService - monitorgridresource (${util.Util.datetime()})] Exception updating the state of resource ${gr.name}"
+         println "[MonitorService - monitorgridresource] \t ${e}"
+
       }
       /*
       The lines below intend to keep a track about the resource status.
