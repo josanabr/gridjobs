@@ -86,7 +86,9 @@ implements remote.Scheduler
        def resourcelistsize = Gridresource.list().size()
        while (true) {
           def rc = Gridresource.findBySequence(cr)
-          if (resourcemanagerService.availablenodes(rc) > 0)
+          def availablenodes = resourcemanagerService.availablenodes(rc)
+          println "[RrschedService -  nextgridresource] \t number of available nodes equals ${availablenodes}"
+          if (availablenodes > 0)
              break
           else {
              cr = (cr % resourcelistsize) + 1
