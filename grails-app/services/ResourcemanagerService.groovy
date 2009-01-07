@@ -18,7 +18,7 @@ class ResourcemanagerService {
     int freenode(Gridresource gr) {
        def rc = Resourcecharacteristics.findByGridresource(gr)
        //return rc.numnodes - (rc.dead + rc.inuse)
-       def total = Task.findAll('from Task as t where (t.state = ? or t.state = ? or t.state = ?) and t.gridresource = ?',['UNSUBMITTED','PENDING','ACTIVE',gr).size()
+       def total = Task.findAll('from Task as t where (t.state = ? or t.state = ? or t.state = ?) and t.gridresource = ?',['UNSUBMITTED','PENDING','ACTIVE',gr]).size()
        return rc.numnodes - total
     }
     int freenode(String server) {
