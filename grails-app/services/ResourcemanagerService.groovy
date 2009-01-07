@@ -56,6 +56,8 @@ class ResourcemanagerService {
     // It returns 0 if the resource could be allocated, 
     // otherwise -1
     int allocatenode(Gridresource gr) {
+       return 0
+       /*
        def flag = true
        def counter = 0
        // http://graemerocher.blogspot.com/2008/10/new-gorm-features-coming-in-11.html
@@ -99,6 +101,7 @@ class ResourcemanagerService {
        }
        println "[ResourceManagerService - allocatenode (${util.joda.Util.datetime()})] Exiting by default :-|"
        return 0 // by the flies :-D
+       */
     }
     int allocatenode(String server) {
        def gr = Gridresource.findByName(server)
@@ -126,6 +129,8 @@ class ResourcemanagerService {
 
     // returns '0' on success, otherwise -1
     int releasenode(Gridresource gr) {
+       return 0
+       /*
        def flag = true
        def counter = 0
        while (flag) {
@@ -166,6 +171,7 @@ class ResourcemanagerService {
           }
        }
        return 0
+       */
     }
     int releasenode(String server) {
        def gr = Gridresource.findByName(server)
