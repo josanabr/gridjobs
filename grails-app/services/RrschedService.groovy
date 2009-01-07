@@ -74,10 +74,27 @@ implements remote.Scheduler
 
     // int nextgridresource(Schedulerstatus ss) {
     int nextgridresource() {
+       def locksuffix = "rrsched"
+       def dirname = "."
+       def maxtries = 10
+       def counter = 1
+       def low = 500
+       def high = 1000
        //def ss = Schedulerstatus.list().get(0) // ss: scheduler status
+       while (util.Util.lockexists(dirname,locksuffix)) {
+          if (counter > maxtries) {
+             return -1
+          }
+          counter++
+          def waitingtime = util.Util.random(low,high)
+          println "[RrschedService - nextgridresource] Try ${counter} waiting for ${waitingtime} ms"
+          Thread.sleep(waitingtime)
+       }
+       util.Util.createlock(dirname,locksuffix)
        def ss = Schedulerstatus.findBySequence(1,[lock: true])
        if (ss == null) {
           println "[RrschedService - nextgridresource] NULL!!!!!!"
+          util.Util.deletelock(dirname,locksuffix)
           return -1
        } 
        def cr = ss.currentresource
@@ -95,8 +112,9 @@ implements remote.Scheduler
              if (cr == _cr) { 
                 // All the resources were considered 
                 // and none was available
-                cr = -1                
+                //cr = -1                
                 ss.save()
+                util.Util.deletelock(dirname,locksuffix)
                 return cr
              }
           }
@@ -105,6 +123,7 @@ implements remote.Scheduler
        ss.currentresource = (cr % Gridresource.list().size()) + 1
        ss.save()
 
+       util.Util.deletelock(dirname,locksuffix)
        return cr
     }
 }
