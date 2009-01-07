@@ -62,8 +62,9 @@ class ResourcemanagerService {
        while (flag) {
           flag = false
              // http://grails.org/doc/1.0.x/guide/single.html#5.3.5 Pessimistic and Optimistic Locking
+          def  rc = null
           try { 
-             def rc = Resourcecharacteristics.findByGridresource(gr, [lock: true])
+             rc = Resourcecharacteristics.findByGridresource(gr, [lock: true])
              if ( (rc.numnodes - (rc.dead + rc.inuse)) > 0) {
                 rc.inuse++
                 if (rc.save(flush: true) == null) {
@@ -83,14 +84,17 @@ class ResourcemanagerService {
              println "[ResourceManagerService - allocatenode (${util.joda.Util.datetime()})] Exception updating the 'rc' record"
              println "[ResourceManagerService - allocatenode] ${e}"
              flag = true
-             def randomwaitingtime = util.Util.random(low,high)
-             println "[ResourceManagerService - allocatenode] \t Waiting for ${randomwaitingtime} ms"
-             Thread.sleep(randomwaitingtime)
+             rc = null
              counter++
           }
           if (counter > maxtries) {
              println "[ResourceManagerService - allocatenode (${util.joda.Util.datetime()})] Maximum number of tries reached"
              return -1 // maximum number of tries reached
+          }
+          if (flag) {
+             def randomwaitingtime = util.Util.random(low,high)
+             println "[ResourceManagerService - allocatenode] \t Waiting for ${randomwaitingtime} ms"
+             Thread.sleep(randomwaitingtime)
           }
        }
        println "[ResourceManagerService - allocatenode (${util.joda.Util.datetime()})] Exiting by default :-|"
@@ -126,8 +130,9 @@ class ResourcemanagerService {
        def counter = 0
        while (flag) {
           flag = false
+          def rc = null 
           try { 
-             def rc = Resourcecharacteristics.findByGridresource(gr, [lock: true])
+             rc = Resourcecharacteristics.findByGridresource(gr, [lock: true])
              if (rc.inuse <= 0) {
                 println "[ResourceManagerService - releasenode (${util.joda.Util.datetime()})] inuse less or equal to zero :-|"
                 return -1
@@ -147,14 +152,17 @@ class ResourcemanagerService {
              println "[ResourceManagerService - releasenode (${util.joda.Util.datetime()})] Exception updating the 'rc' record"
              println "[ResourceManagerService - releasenode] ${e}"
              flag = true
-             def randomwaitingtime = util.Util.random(low,high)
-             println "[ResourceManagerService - releasenode] \t Waiting for ${randomwaitingtime} ms"
-             Thread.sleep(randomwaitingtime)
+             rc = null
              counter++
           }
           if (counter > maxtries) {
              println "[ResourceManagerService - releasenode] Maximum number of tries reached"
              return -1 // maximum number of tries reached
+          }
+          if (flag) {
+             def randomwaitingtime = util.Util.random(low,high)
+             println "[ResourceManagerService - releasenode] \t Waiting for ${randomwaitingtime} ms"
+             Thread.sleep(randomwaitingtime)
           }
        }
        return 0
