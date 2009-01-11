@@ -145,7 +145,8 @@ class ResourcemanagerService {
     int releasenode(Gridresource gr) {
        def rrstoreenable = Schedulerstatus.findBySequence(2)
        if (rrstoreenable.currentresource == 1) { // It's necessary to check for pending tasks
-          def numpendingtask = Pendingtask.findAll('from pendingtask as p where p.attended = ?',[false]).size()
+          def _dummy = false
+          def numpendingtask = Pendingtask.findAll('from pendingtask as p where p.attended = ?',[_dummy]).size()
           if (numpendingtask <= 0) { // No pending tasks
              return 0
           }
