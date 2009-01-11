@@ -1,6 +1,8 @@
 import org.joda.time.DateTime
 
-class RrstoreschedService {
+class RrstoreschedService 
+implements remote.Scheduler
+{
 
     boolean transactional = true
     static expose = ['hessian']
