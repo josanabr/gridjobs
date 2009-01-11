@@ -4,6 +4,7 @@ class ResourcemanagerService {
     int low = 100
     int high = 1000
     int maxtries = 10
+    def launchService
 
     int totalnodes(Gridresource gr) {
        def rc = Resourcecharacteristics.findByGridresource(gr)
@@ -15,13 +16,17 @@ class ResourcemanagerService {
     }
     // -----------------
 
-    int freenode(Gridresource gr) {
+    int freenode(Gridresource gr, int max = -1) {
        def rc = Resourcecharacteristics.findByGridresource(gr)
        //return rc.numnodes - (rc.dead + rc.inuse)
        def total = Task.findAll('from Task as t where (t.state = ? or t.state = ? or t.state = ?) and t.gridresource = ?',['UNSUBMITTED','PENDING','ACTIVE',gr]).size()
-       return rc.numnodes - total
+       if (max == -1) { 
+          return rc.numnodes - total
+       } else {
+          return max - total
+       }
     }
-    int freenode(String server) {
+    int freenode(String server, int max = -1) {
        def gr = Gridresource.findByName(server)
        return freenode(gr)
     }
@@ -46,11 +51,16 @@ class ResourcemanagerService {
        return deadnode(gr)
     }
     // -----------------
+    // 'max' is an optional parameter. When the user
+    // assigns a different value to 'max', it's used for compare
+    // the available nodes with this value.
+    // When the value is '-1', the number of available
+    // nodes is compare with the real number of nodes.
 
-    int availablenodes(Gridresource gr) {
+    int availablenodes(Gridresource gr, int max = -1) {
        return freenode(gr)
     }
-    int availablenodes(String server) {
+    int availablenodes(String server, int max = -1) {
        return freenode(server)
     }
     // -----------------
@@ -131,6 +141,44 @@ class ResourcemanagerService {
 
     // returns '0' on success, otherwise -1
     int releasenode(Gridresource gr) {
+       def rrstoreenable = Schedulerstatus.findBySequence(2)
+       if (rrstoreenable.currentresource == 1) { // It's necessary to check for pending tasks
+          def numpendingtask = Pendingtask.findAll('from pendingtask as p where p.attended = ?',[false]).size()
+          if (numpendingtask <= 0) { // No pending tasks
+             return 0
+          }
+          // Getting access to 'Pendingtask' table
+          println "[ResourcemanagerService - releasenode] Looking for pending tasks"
+          def locksuffix = 'rrstoresched'
+          def dirname = "."
+          def low = 500
+          def high = 1000
+          def maxtries = 10
+          def counter = 1
+          while (util.Util.lockexists(dirname,locksuffix)) {
+             if (counter > maxtries) {
+                return 0
+             }
+             counter++
+             def waitingtime = util.Util.random(low,high)
+             println "[ResourcemanagerService - releasenode] Trying to access to 'Pendingtask' table, waiting ${waitingtime} ms"
+             Thread.sleep(waitingtime)
+          }
+          // Access 'granted'
+          util.Util.createlock(dirname,locksuffix)
+          //def pt  = Pendingtask.list(max:1,sort:'initialtime').get(0)
+          def pt  = Pendingtask.find('from pendingtask as p where p.attended = ? order by p.initialtime', [false])
+          if (pt == null) {
+             println "[ResourcemanagerService - releasenode] 'Pendingtask' not available"
+             return 0
+          }
+          pt.resumedtime = new DateTime().toDate()
+          pt.attended = true
+          pt.save()
+          util.Util.deletelock(dirname,locksuffix)
+          println "[ResourcemanagerService - releasenode] 'Pendingtask' was got, and dispatched to '${gr.name}'"
+          launchService.execute(gr.name,pt.applicationname,pt.parameters,pt.executablename)
+       }
        return 0
        /*
        def flag = true

@@ -46,6 +46,7 @@ class BootStrap {
                            sequence: 3,
                            organization: 'AIST')
       x.save()
+      /*
       x = new Gridresource(name:'fsvc001.asc.hpcc.jp',
                            headnode:'fsvc001.asc.hpcc.jp',
                            batchscheduler: 'sge',
@@ -54,11 +55,18 @@ class BootStrap {
                            sequence: 4,
                            organization: 'AIST')
       x.save()
+      */
 
       endtime = new DateTime()
       println "[Bootstrap] Elapsed time during insertion of records into Gridresource table: ${endtime.millis - starttime.millis} ms."
 
       x = new Schedulerstatus(sequence:1, currentresource:1)
+      x.save()
+      // This second register enables the utilization of 
+      // 'RrstoreschedService' class.
+      // if 'currentresource' == 1; enable
+      // otherwise; disable
+      x = new Schedulerstatus(sequence:2, currentresource:1)
       x.save()
 
       starttime = new DateTime()
