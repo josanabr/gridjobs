@@ -2,6 +2,7 @@ class Schedulerstatus {
    int currentresource
    int sequence
    static constraints = {
-      currentresource(unique:true)
+      //currentresource(unique:true)
+      sequence(unique: true)
    }
 }
