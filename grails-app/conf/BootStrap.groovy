@@ -29,7 +29,7 @@ class BootStrap {
                            userhome: userhome,
                            sequence: 1,
                            organization: 'SDSC')
-      x.save()
+      x.save(flush: true)
       x = new Gridresource(name:'rocks-153.sdsc.edu',
                            headnode:'rocks-153.sdsc.edu',
                            batchscheduler: 'sge',
@@ -37,7 +37,7 @@ class BootStrap {
                            userhome: userhome,
                            sequence: 2,
                            organization: 'SDSC')
-      x.save()
+      x.save(flush: true)
       x = new Gridresource(name:'sakura.hpcc.jp',
                            headnode:'sakura.hpcc.jp',
                            batchscheduler: 'sge',
@@ -45,7 +45,7 @@ class BootStrap {
                            userhome: userhome,
                            sequence: 3,
                            organization: 'AIST')
-      x.save()
+      x.save(flush: true)
       /*
       x = new Gridresource(name:'fsvc001.asc.hpcc.jp',
                            headnode:'fsvc001.asc.hpcc.jp',
