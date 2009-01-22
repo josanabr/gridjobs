@@ -119,8 +119,8 @@ class BootStrap {
       def range = Rango.list()
       gridresource.each { gs ->
          def nbench = "nbench"
-         //def newapplication = new Application(datapath: nbench, executablename: nbench, gridresource: gs, installationdate: new Date(), installationpath: nbench, name: nbench)
-         //newapplication.save()
+         def newapplication = new Application(datapath: nbench, executablename: nbench, gridresource: gs, installationdate: new Date(), installationpath: nbench, name: nbench)
+         newapplication.save()
          range.each { r ->
             states.each { state ->
                def hpforfinding = new Historicperformance(range: r.value, state: state, gridresourcename: gs.name)
