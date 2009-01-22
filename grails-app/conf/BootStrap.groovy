@@ -120,7 +120,12 @@ class BootStrap {
       gridresource.each { gs ->
          def nbench = "nbench"
          def newapplication = new Application(datapath: nbench, executablename: nbench, gridresource: gs, installationdate: new Date(), installationpath: nbench, name: nbench)
-         newapplication.save()
+         if (newapplication.save() == null) {
+            println "[Bootstrap] Error saving the application data"
+            newapplication.allErrors.each {
+               println "[Bootstrap] \t ${it.defaultMessage}"
+            }
+         }
          range.each { r ->
             states.each { state ->
                def hpforfinding = new Historicperformance(range: r.value, state: state, gridresourcename: gs.name)
